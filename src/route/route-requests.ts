@@ -152,6 +152,8 @@ export default class RouteRequests<
     const schemaEntries = Object.entries(schemas)
     const requestKey = Math.random().toString()
 
+    const defaultResponse = (type: string) => `Provided request cannot be processed due to invalid ${ type }`
+
     const flatSchema: Internal.Route.FlatRequestSchema = Object.fromEntries(
       Object.entries(schemas).map(([key, value]) => [key, seal.exportMetadataOf(value)])
     )
@@ -179,11 +181,14 @@ export default class RouteRequests<
       // Perform schema validations unless skipped by debug settings
       if (!ref.__$options?.debug?.validation?.skip) {
         for (const [type, schema] of schemaEntries) {
+          if (!validationParams[type] || typeof validationParams[type] !== "object")
+            return new ValidationError(defaultResponse(type))
+
           const messages = seal.validate(schema, validationParams[type])
           if (messages.length) {
             const msg = ref.__$options?.debug?.validation?.messages
               ? messages.join(", ")
-              : `Provided request cannot be processed due to invalid ${ type }`
+              : defaultResponse(type)
             throw new ValidationError(msg)
           }
         }
