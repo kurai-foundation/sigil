@@ -1,4 +1,6 @@
 // Utility function to convert class names to a human-readable format
+import { IncomingHeaders } from "~/requests/containers"
+
 /**
  * Converts a PascalCase or camelCase class name into a readable string.
  *
@@ -25,6 +27,11 @@ interface IExceptionOptions {
    * Optional message or array of message parts.
    */
   message?: string[] | string
+
+  /**
+   * Optional headers
+   */
+  headers?: Record<string, any>
 }
 
 /**
@@ -36,6 +43,8 @@ export default class Exception extends Error {
    * Numeric error code (e.g., HTTP status code between 100 and 599).
    */
   public code: number
+
+  public headers: IncomingHeaders
 
   /**
    * Constructs a new Exception.
@@ -50,6 +59,8 @@ export default class Exception extends Error {
         // Fallback to a humanized name or generic text if message is not provided
         : (options.name ? classNameToReadable(options.name) : "There was an unknown exception")
     )
+
+    this.headers = new IncomingHeaders(options.headers)
 
     // Ensure code is within valid HTTP status range, default to 500 otherwise
     this.code = options.code >= 100 && options.code <= 599 ? options.code : 500

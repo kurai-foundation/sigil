@@ -24,7 +24,7 @@ export const defaultTemplate: SigilOptions["responseTemplate"] = (payload: Inter
         { throw: true }
       ),
       code: (payload as any).code ?? 500,
-      headers: { "content-type": "application/json" }
+      headers: { "content-type": "application/json", ...payload.headers }
     }
   }
 
