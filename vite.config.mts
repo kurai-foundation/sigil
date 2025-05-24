@@ -16,7 +16,8 @@ export default defineConfig({
   ],
   build: {
     target: "node24",
-    minify: true,
+    minify: false,
+    sourcemap: true,
     lib: {
       entry: {
         "sigil": path.resolve(__dirname, "src/index.ts"),
@@ -28,10 +29,17 @@ export default defineConfig({
       formats: ["es", "cjs"]
     },
     rollupOptions: {
-      external: [...builtinModules, "@sigiljs/pathfinder", "@sigiljs/seal", "formidable"],
-      output: { exports: "named" }
+      external: [
+        ...builtinModules,
+        "@sigiljs/pathfinder",
+        "@sigiljs/seal",
+        "formidable"
+      ],
+      output: { exports: "named", preserveModules: true, interop: "auto" }
     },
-    commonjsOptions: { transformMixedEsModules: true },
+    commonjsOptions: {
+      transformMixedEsModules: true
+    },
     ssr: true
   }
 })
