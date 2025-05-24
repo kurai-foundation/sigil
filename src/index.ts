@@ -1,7 +1,7 @@
 import { seal } from "@sigiljs/seal"
 import { Modifier, Route } from "~/route"
-import { Sigil } from "~/sigil"
 import { SigilPlugin } from "~/sigil/misc"
+import Sigil from "~/sigil/sigil"
 import { DebugOptions, SigilOptions } from "~/sigil/types"
 import { Internal } from "~/types"
 
