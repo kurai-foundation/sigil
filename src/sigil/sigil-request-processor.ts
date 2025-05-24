@@ -3,6 +3,7 @@ import fs from "node:fs"
 import http, { IncomingMessage } from "node:http"
 import path from "node:path"
 import { processRequestContent } from "~/requests"
+import { IncomingRequestProcessorResponse } from "~/requests/containers"
 import { FileResponse, MiddlewareModificationRequest, RawResponse, Redirect, SigilResponse } from "~/responses"
 import { Exception, NotFound } from "~/responses/exceptions"
 import { MiddlewareModificationRequestOptions } from "~/responses/middleware-modification-request"
@@ -48,6 +49,7 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
    * logs the request, and writes the HTTP response.
    *
    * @param request inbound HTTP message for context.
+   * @param processedRequest processed request
    * @param response sigilResponse or Exception to send.
    * @param res HTTP server response object.
    * @param modification Modified options
@@ -55,6 +57,7 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
    */
   protected async $sendResponse(
     request: IncomingMessage,
+    processedRequest: IncomingRequestProcessorResponse | null,
     response: SigilResponse | Exception,
     res: http.ServerResponse,
     modification: MiddlewareModificationRequestOptions,
@@ -64,7 +67,7 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
 
     // Plugin hook before sending response
     for (const plugin of this.$plugins.values()) {
-      const result = await plugin.onBeforeResponseSent(request, response)
+      const result = await plugin.onBeforeResponseSent(processedRequest, response)
       if (result) {
         res.writeHead(result.code, Object.assign(result.headers.link, modification.headers)).end(Buffer.isBuffer(result.content) ? result.content
           : (typeof result.content === "string" ? result.content : jsonStringify(result.content, { throw: true })))
@@ -198,7 +201,7 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
     const responses = new SigilResponsesList()
 
     // Return 404 if parsing fails
-    if (!request) return this.$sendResponse(req, new NotFound(), res, {}, at)
+    if (!request) return this.$sendResponse(req, request, new NotFound(), res, {}, at)
 
     // Plugin hook on request received
     for (const plugin of this.$plugins.values()) {
@@ -219,7 +222,7 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
           modifiedOptions.headers = { ...modifiedOptions.headers, ...response.headers }
           modifiedOptions.code = response.code
         }
-        else return this.$sendResponse(req, response, res, {}, at)
+        else return this.$sendResponse(req, request, response, res, {}, at)
       }
     }
 
@@ -231,10 +234,10 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
         request.createClientRequest(match.params)
       )
       const response = await this.$formatResponse(rawResponse)
-      return this.$sendResponse(req, response, res, modifiedOptions, at)
+      return this.$sendResponse(req, request, response, res, modifiedOptions, at)
     }
 
     // Fallback 404 for unmatched routes
-    this.$sendResponse(req, new NotFound(), res, modifiedOptions, at)
+    this.$sendResponse(req, request, new NotFound(), res, modifiedOptions, at)
   }
 }

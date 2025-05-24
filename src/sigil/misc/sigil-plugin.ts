@@ -1,4 +1,4 @@
-import http, { IncomingMessage } from "node:http"
+import http from "node:http"
 import https from "node:https"
 import { IncomingRequestProcessorResponse } from "~/requests/containers"
 import { SigilResponse } from "~/responses"
@@ -88,7 +88,7 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
    * @param response SigilResponse or Exception being sent.
    */
   public onBeforeResponseSent(
-    request: IncomingMessage,
+    request: IncomingRequestProcessorResponse | null,
     response: SigilResponse | Exception
   ): void | SigilResponse | Promise<void | SigilResponse> {}
 
