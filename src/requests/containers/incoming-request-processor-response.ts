@@ -1,4 +1,6 @@
 import { HttpMethod } from "@sigiljs/pathfinder"
+import IncomingHeaders from "~/requests/containers/incoming-headers"
+import { ClientIpInfo } from "~/requests/get-client-ip-info"
 import { type Internal } from "~/types"
 import safeUrl from "~/utils/safe-url"
 
@@ -19,6 +21,10 @@ export default class IncomingRequestProcessorResponse {
   public readonly path: string
   /** HTTP method of the request. */
   public readonly method: HttpMethod
+  /** Request headers */
+  public readonly headers: IncomingHeaders
+  /** Client IP information. */
+  public readonly remoteAddress: ClientIpInfo
 
   /** Cached client request object once created. */
   #clientRequest: any
@@ -33,10 +39,12 @@ export default class IncomingRequestProcessorResponse {
   constructor(options: Internal.Requests.FullRequestProcessorResponse) {
     this.#options = options
 
+    this.headers = options.headers
     this.host = options.host
     this.path = options.path
     this.method = options.method
     this.protocol = options.protocol
+    this.remoteAddress = options.remoteAddress
   }
 
   /**
