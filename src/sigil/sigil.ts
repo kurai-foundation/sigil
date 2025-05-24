@@ -67,15 +67,25 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
       throw new Error(`Plugin with name "${ plugin.name }" already registered.`)
     }
 
-    attachPluginContext(plugin, {
-      sigilApi: this,
-      responseTemplate: this.$responseTemplate,
-      routes: this.$routes,
-      debugOpts: this.$options.debug || {}
-    })
+    try {
+      attachPluginContext(plugin, {
+        sigilApi: this,
+        responseTemplate: this.$responseTemplate,
+        routes: this.$routes,
+        debugOpts: this.$options.debug || {}
+      })
 
-    const instance = new plugin(config as any)
-    this.$plugins.set(plugin.name, instance as any as SigilPlugin)
+      const instance = new plugin(config as any)
+      this.$plugins.set(plugin.name, instance as any as SigilPlugin)
+    }
+    catch (error: any) {
+      this.logger({
+        message: `Failed to initialize plugin "${ plugin?.name }" due to ${ error?.name }: ${ error?.message }`,
+        level: "error",
+        module: "registry",
+        json: { milestone: "plugin", ok: false, plugins: plugin?.name }
+      })
+    }
   }
 
   /**
