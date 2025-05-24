@@ -11,7 +11,7 @@ export default class FileResponse extends SigilResponse {
   /**
    * HTTP status code for file responses (defaults to 200).
    */
-  readonly code: number = 200
+  public code: number = 200
 
   /**
    * Constructs a new FileResponse.

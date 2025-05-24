@@ -1,5 +1,5 @@
 import { BufferEncoding } from "formidable"
-import { FileResponse, RawResponse, Redirect, SigilResponse } from "~/responses"
+import { FileResponse, MiddlewareModificationRequest, RawResponse, Redirect, SigilResponse } from "~/responses"
 import {
   BadGateway,
   BadRequest,
@@ -43,6 +43,7 @@ import {
   URITooLong,
   VariantAlsoNegotiates
 } from "~/responses/exceptions"
+import { MiddlewareModificationRequestOptions } from "~/responses/middleware-modification-request"
 
 /**
  * Helper class providing factory methods for standard successful responses.
@@ -63,6 +64,19 @@ class SuccessSigilResponses {
     headers?: Record<string, any>
   ): SigilResponse {
     return new SigilResponse(payload, code, headers)
+  }
+
+  /**
+   * If returned from middleware, will replace response status code and merge with
+   * existing headers, instead of returning actual response
+   *
+   * If returned outside of middleware, will act like
+   * default SigilResponse with null as body
+   *
+   * @param {MiddlewareModificationRequestOptions} options params that will be modified if request accepted
+   */
+  public middlewareModificationRequest(options: MiddlewareModificationRequestOptions): MiddlewareModificationRequest {
+    return new MiddlewareModificationRequest(options)
   }
 
   /**

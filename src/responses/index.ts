@@ -41,6 +41,7 @@ import {
   URITooLong,
   VariantAlsoNegotiates
 } from "~/responses/exceptions"
+import MiddlewareModificationRequest from "~/responses/middleware-modification-request"
 import FileResponse from "./file-response"
 import RawResponse from "./raw-response"
 import Redirect from "./redirect"
@@ -50,6 +51,7 @@ export {
   FileResponse,
   RawResponse,
   Redirect,
+  MiddlewareModificationRequest,
   SigilResponse,
 
   Exception,

@@ -35,7 +35,7 @@ export default class Exception extends Error {
   /**
    * Numeric error code (e.g., HTTP status code between 100 and 599).
    */
-  public readonly code: number
+  public code: number
 
   /**
    * Constructs a new Exception.

@@ -8,7 +8,7 @@ export default class Redirect extends SigilResponse {
   /**
    * HTTP status code for the redirect (300-399).
    */
-  public readonly code: number = 302
+  public code: number = 302
 
   /**
    * Target URL for the redirect.
