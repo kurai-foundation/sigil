@@ -82,12 +82,15 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
   public onRequestReceived(request: IncomingRequestProcessorResponse): void {}
 
   /**
-   * Called just before a response is sent. Cannot modify the response,
-   * only for side effects (e.g., analytics, metrics).
+   * Called just before a response is sent.
+   * Can replace the actual response by returning custom SigilResponse.
    * @param request original HTTP incoming message.
    * @param response SigilResponse or Exception being sent.
    */
-  public onBeforeResponseSent(request: IncomingMessage, response: SigilResponse | Exception): void {}
+  public onBeforeResponseSent(
+    request: IncomingMessage,
+    response: SigilResponse | Exception
+  ): void | SigilResponse | Promise<void | SigilResponse> {}
 
   /**
    * Called when the internal HTTP/S server starts listening.

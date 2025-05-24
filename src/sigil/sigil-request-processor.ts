@@ -56,7 +56,12 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
 
     // Plugin hook before sending response
     for (const plugin of this.$plugins.values()) {
-      plugin.onBeforeResponseSent(request, response)
+      const result = await plugin.onBeforeResponseSent(request, response)
+      if (result) {
+        res.writeHead(result.code, result.headers.link).end(Buffer.isBuffer(result.content) ? result.content
+          : (typeof result.content === "string" ? result.content : jsonStringify(result.content, { throw: true })))
+        return
+      }
     }
 
     // Log request method, URL, status code, and latency
