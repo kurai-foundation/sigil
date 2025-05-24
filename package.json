@@ -2,7 +2,7 @@
   "name": "@sigiljs/sigil",
   "version": "0.0.0",
   "description": "TypeScript-first Node.js HTTP framework offering schema-driven routing, modifier-based middleware, plugin extensibility, and flexible response templating",
-  "main": "dist/index.js",
+  "main": "dist/sigil.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "test": "jest --verbose --runInBand",
