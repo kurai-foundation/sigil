@@ -1,0 +1,78 @@
+{
+  "name": "@sigiljs/sigil",
+  "version": "0.0.0",
+  "description": "TypeScript-first Node.js HTTP framework offering schema-driven routing, modifier-based middleware, plugin extensibility, and flexible response templating",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "test": "jest --verbose --runInBand",
+    "build": "vite build",
+    "serve": "npx nodemon --watch \"src/**/*.ts\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node\" src/index.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/sigil.mjs",
+      "require": "./dist/sigil.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils.mjs",
+      "require": "./dist/utils.js"
+    },
+    "./responses": {
+      "types": "./dist/responses/index.d.ts",
+      "import": "./dist/responses.mjs",
+      "require": "./dist/responses.js"
+    },
+    "./requests/containers": {
+      "types": "./dist/requests/containers/index.d.ts",
+      "import": "./dist/requestContainers.mjs",
+      "require": "./dist/requestContainers.js"
+    }
+  },
+  "keywords": [
+    "router",
+    "sigil",
+    "framework",
+    "node",
+    "js",
+    "typescript",
+    "ts",
+    "typescript-first"
+  ],
+  "author": "Kurai Foundation",
+  "engines": {
+    "node": ">=24.0.2"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/formidable": "^3.4.5",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kurai-foundation/sigil.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/kurai-foundation/sigil/issues"
+  },
+  "homepage": "https://github.com/kurai-foundation/sigil#readme",
+  "dependencies": {
+    "@sigiljs/pathfinder": "^1.1.0",
+    "@sigiljs/seal": "^1.0.6",
+    "formidable": "^3.5.4"
+  }
+}
