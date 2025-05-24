@@ -112,12 +112,14 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
     if (response instanceof Exception) {
       res.writeHead(response.code, Object.assign(template.headers, modification.headers)).end(template.content)
 
-      this.logger({
-        level: "error",
-        module: "handler",
-        message: dim => ` ${ dim("-> ") }${ dim(`${ response.name }: ${ response.message }`) }`,
-        json: { name: response.name, message: response.message }
-      })
+      if (response.code > 499) {
+        this.logger({
+          level: "error",
+          module: "handler",
+          message: dim => ` ${ dim("-> ") }${ dim(`${ response.name }: ${ response.message }`) }`,
+          json: { name: response.name, message: response.message }
+        })
+      }
       return
     }
 
@@ -215,11 +217,11 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
 
     // Execute global middleware sequence
     for (const middleware of this.$middlewares.values()) {
-      const result = await middleware(request, responses)
+      const result = await middleware(request, responses, modifiedOptions)
       if (result !== undefined) {
         const response = await this.$formatResponse(result)
         if (response instanceof MiddlewareModificationRequest) {
-          modifiedOptions.headers = { ...modifiedOptions.headers, ...response.headers }
+          modifiedOptions.headers = { ...modifiedOptions.headers, ...response.headers.link }
           modifiedOptions.code = response.code
         }
         else return this.$sendResponse(req, request, response, res, {}, at)
@@ -234,9 +236,9 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
         request.createClientRequest(match.params)
       )
       const response = await this.$formatResponse(rawResponse)
+
       return this.$sendResponse(req, request, response, res, modifiedOptions, at)
     }
-
     // Fallback 404 for unmatched routes
     this.$sendResponse(req, request, new NotFound(), res, modifiedOptions, at)
   }

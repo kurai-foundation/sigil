@@ -1,4 +1,5 @@
 import { IncomingRequestProcessorResponse } from "~/requests/containers"
+import { MiddlewareModificationRequestOptions } from "~/responses/middleware-modification-request"
 import SigilResponsesList from "~/sigil/misc/sigil-responses-list"
 import { Internal } from "~/types"
 
@@ -13,11 +14,13 @@ export type MiddlewareResponse = Internal.Requests.HandlerResponse | undefined |
  *
  * @param request processed incoming request object.
  * @param response factory for generating response helpers.
+ * @param modification response modification request
  * @returns MiddlewareResponse or a promise resolving to one.
  */
 export type SigilMiddlewareCallback = (
   request: IncomingRequestProcessorResponse,
-  response: SigilResponsesList
+  response: SigilResponsesList,
+  modifications: MiddlewareModificationRequestOptions
 ) => MiddlewareResponse | Promise<MiddlewareResponse>
 
 /**
