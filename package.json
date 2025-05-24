@@ -72,7 +72,7 @@
   "homepage": "https://github.com/kurai-foundation/sigil#readme",
   "dependencies": {
     "@sigiljs/pathfinder": "^1.1.0",
-    "@sigiljs/seal": "^1.0.6",
+    "@sigiljs/seal": "^1.0.7",
     "formidable": "^3.5.4"
   }
 }
