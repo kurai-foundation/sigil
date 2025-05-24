@@ -6,7 +6,7 @@ import { IncomingBody, IncomingFile, IncomingHeaders, IncomingSearchParams } fro
 import { ClientIpInfo } from "~/requests/get-client-ip-info"
 import { SigilResponse } from "~/responses"
 import { Exception } from "~/responses/exceptions"
-import { __$InternalNamedSigilResponse } from "~/responses/sigil-response"
+import { $InternalNamedSigilResponse } from "~/responses/sigil-response"
 
 /**
  * Core internal types used by the Sigil framework.
@@ -138,7 +138,7 @@ namespace Internal {
       /** Textual description of the route. */
       description: string
       /** Array of possible response descriptors */
-      responses: Array<number | (new () => Exception) | __$InternalNamedSigilResponse>
+      responses: Array<number | (new () => Exception) | $InternalNamedSigilResponse>
       /** Example response payload. */
       example: any
       /** Deprecated flag. */

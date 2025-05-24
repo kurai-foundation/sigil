@@ -4,7 +4,7 @@ import { IncomingRequestProcessorResponse } from "~/requests/containers"
 import { SigilResponse } from "~/responses"
 import { Exception } from "~/responses/exceptions"
 import { SigilOptions } from "~/sigil/types/common.types"
-import { __$InternalPluginContext, __$InternalRoutesListMethods, __$SigilInternalPluginAPI } from "~/sigil/types/internal.types"
+import { $InternalPluginContext, $InternalRoutesListMethods, $SigilInternalPluginAPI } from "~/sigil/types/internal.types"
 
 /**
  * Constructor type for Sigil plugins.
@@ -32,7 +32,7 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
   /**
    * Internal routes API for registering or inspecting routes.
    */
-  public readonly $routes: __$InternalRoutesListMethods
+  public readonly $routes: $InternalRoutesListMethods
 
   /**
    * Response template function from the framework.
@@ -47,12 +47,12 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
   /**
    * Logger scoped to this plugin.
    */
-  protected readonly logger: __$InternalPluginContext["logger"]
+  protected readonly logger: $InternalPluginContext["logger"]
 
   /**
    * Internal Sigil API for plugins (mount, addMiddleware, etc.).
    */
-  protected readonly sigil: __$SigilInternalPluginAPI
+  protected readonly sigil: $SigilInternalPluginAPI
 
   /**
    * Constructs the plugin with context injected by attachPluginContext.
@@ -62,7 +62,7 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
     const cls = new.target as typeof SigilPlugin
     this.name = cls.name
 
-    const ctx: __$InternalPluginContext = (new.target.prototype as any).__$ctx
+    const ctx: $InternalPluginContext = (new.target.prototype as any).__$ctx
     if (!ctx) {
       throw new Error("Cannot initialize plugin without context")
     }

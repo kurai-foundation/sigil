@@ -38,7 +38,7 @@ export class BasicResponse {
  * Internal subclass used to attach a schema name for documentation.
  * Not intended for direct use in application code.
  */
-export class __$InternalNamedSigilResponse extends BasicResponse {
+export class $InternalNamedSigilResponse extends BasicResponse {
   /**
    * Name of the schema to apply for this response in OpenAPI docs.
    * @internal
@@ -88,8 +88,8 @@ export default class SigilResponse extends BasicResponse {
     content: any,
     code?: number,
     headers?: Record<string, any>
-  ): __$InternalNamedSigilResponse {
-    const namedResponse = new __$InternalNamedSigilResponse()
+  ): $InternalNamedSigilResponse {
+    const namedResponse = new $InternalNamedSigilResponse()
     namedResponse.__$schemaName = name
     namedResponse.content = content
     namedResponse.code = code || 200

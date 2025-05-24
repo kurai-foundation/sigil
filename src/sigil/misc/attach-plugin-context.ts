@@ -2,7 +2,7 @@ import { config } from "nodemon"
 import { ModifierConstructor, Route, RouteOptions } from "~/route"
 import { SigilMiddlewareCallback } from "~/sigil/misc/sigil-middleware"
 import { SigilPlugin, SigilPluginConstructor } from "~/sigil/misc/sigil-plugin"
-import { __$InternalPluginContext, __$SigilInternalPluginAPI, DebugOptions, MaybePromise, SigilOptions } from "~/sigil/types"
+import { $InternalPluginContext, $SigilInternalPluginAPI, DebugOptions, MaybePromise, SigilOptions } from "~/sigil/types"
 import { Internal } from "~/types"
 import makeLog from "~/utils/make-log"
 
@@ -13,7 +13,7 @@ interface Options {
   /**
    * Internal API enabling plugin to register other plugins, middleware, and routes.
    */
-  sigilApi: __$SigilInternalPluginAPI
+  sigilApi: $SigilInternalPluginAPI
   /**
    * Set of mounted routes in the application.
    */
@@ -95,5 +95,5 @@ export default function attachPluginContext(plugin: SigilPluginConstructor<any>,
      * Logger function scoped to this plugin.
      */
     logger: o => makeLog(opts.debugOpts, { module: snakeCaseName, ...o })
-  } as __$InternalPluginContext
+  } as $InternalPluginContext
 }

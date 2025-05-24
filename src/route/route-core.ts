@@ -34,9 +34,8 @@ export default class RouteCore<
 
   /**
    * Router-level configuration options (e.g., debug settings).
-   * @internal
    */
-  public __$options?: RouteOptions<any>
+  protected __$options?: RouteOptions<any>
 
   /**
    * Reference to the root Route when chaining definitions.
@@ -89,6 +88,13 @@ export default class RouteCore<
     if (instances) {
       this.$modifierInstances = instances.map(Ctor => new Ctor()) as X<Middleware>[]
     }
+  }
+
+  /**
+   * Retrieve route options
+   */
+  public get routeOptions() {
+    return this.__$options
   }
 
   /**
