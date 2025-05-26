@@ -144,6 +144,8 @@ export default abstract class SigilCore<T extends Partial<SigilOptions>> {
 
     // Run onInitialize only once
     if (!this.#pluginsInitialized) {
+      this.#pluginsInitialized = true
+
       for (const plugin of this.$plugins.values()) {
         plugin.onInitialize()
       }
@@ -155,7 +157,6 @@ export default abstract class SigilCore<T extends Partial<SigilOptions>> {
         json: { milestone: "plugin", ok: true, plugins: pluginsList }
       })
     }
-    this.#pluginsInitialized = true
 
     // Invoke onUpdateCallback for all plugins
     for (const plugin of this.$plugins.values()) {
