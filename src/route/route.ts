@@ -1,9 +1,9 @@
 import { Pathfinder } from "@sigiljs/pathfinder"
 import { BaseSchema, ObjectSchema, seal } from "@sigiljs/seal"
 import { InferSchema } from "@sigiljs/seal/types"
+import { ModifierConstructor } from "~/route/modifier"
 import { DebugOptions } from "~/sigil/types"
 import { Internal } from "~/types"
-import { ModifierConstructor } from "./modifier"
 import RouteRequests from "./route-requests"
 
 type Constructor = (readonly ModifierConstructor<any, any>[]) | undefined

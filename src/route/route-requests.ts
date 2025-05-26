@@ -2,7 +2,7 @@ import { HttpMethod, Pathfinder, RouteParams } from "@sigiljs/pathfinder"
 import { seal, ValidationError } from "@sigiljs/seal"
 import SigilResponsesList from "~/sigil/misc/sigil-responses-list"
 import { type Internal } from "~/types"
-import { MergePayloads, ModifierConstructor } from "./modifier"
+import { MergePayloads, ModifierConstructor } from "./modifier/modifier"
 import { RouteOptions } from "./route"
 import RouteCore from "./route-core"
 

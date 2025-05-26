@@ -1,4 +1,5 @@
 import { RouteParams } from "@sigiljs/pathfinder"
+import { $InternalModifierContext, $SigilInternalModifierAPI } from "~/route/modifier/modifier.types"
 import { Internal } from "~/types"
 
 /**
@@ -24,10 +25,22 @@ export abstract class Modifier<
   T = any,
   Path extends string = string,
 > {
+  protected readonly sigil: $SigilInternalModifierAPI | undefined
+
+  protected readonly logger!: $InternalModifierContext["logger"]
+
   /**
    * Creates a new Modifier instance. No parameters.
    */
-  protected constructor() {}
+  protected constructor() {
+    const ctx: $InternalModifierContext = (new.target.prototype as any).__$ctx
+    if (!ctx) {
+      throw new Error("Cannot initialize modifier without context")
+    }
+
+    this.sigil = ctx.sigilApi
+    this.logger = ctx.logger
+  }
 
   /**
    * Lifecycle method called just before the request is passed

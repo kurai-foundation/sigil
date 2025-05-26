@@ -1,4 +1,6 @@
 import { Pathfinder, RouteParams } from "@sigiljs/pathfinder"
+import attachModifierContext from "~/route/modifier/attach-modifier-context"
+import Sigil from "~/sigil/sigil"
 import { type Internal } from "~/types"
 import makeLog, { ILogOptions } from "~/utils/make-log"
 import { ModifierConstructor } from "./modifier"
@@ -37,6 +39,8 @@ export default class RouteCore<
    */
   protected __$options?: RouteOptions<any>
 
+  protected __$sigil?: Sigil
+
   /**
    * Reference to the root Route when chaining definitions.
    * Used to aggregate child request metadata.
@@ -55,7 +59,12 @@ export default class RouteCore<
    * Instantiated middleware modifiers for this router.
    * @protected
    */
-  protected readonly $modifierInstances: X<Middleware>[] = []
+  protected $modifierInstances: X<Middleware>[] = []
+
+  /**
+   * @protected
+   */
+  protected $modifierConstructors: readonly ModifierConstructor<any, any>[] = []
 
   /**
    * Callback invoked whenever the router's structure is updated.
@@ -72,21 +81,22 @@ export default class RouteCore<
   /**
    * Initializes the RouteCore.
    *
-   * @param instances - Array of modifier constructors to apply, or undefined.
-   * @param $pathfinder - The underlying pathfinder router instance.
-   * @param $options - Optional router settings (excluding modifiers).
+   * @param modifiers array of modifier constructors to apply, or undefined.
+   * @param $pathfinder underlying pathfinder router instance.
+   * @param $options optional router settings (excluding modifiers).
    * @protected
    */
   protected constructor(
-    instances: (readonly ModifierConstructor<any, any>[]) | undefined,
+    modifiers: (readonly ModifierConstructor<any, any>[]) | undefined,
     protected readonly $pathfinder: Pathfinder,
     $options?: RouteOptions<Middleware>
   ) {
     this.__$options = $options
     this.logger = makeLog.bind({}, $options?.debug)
 
-    if (instances) {
-      this.$modifierInstances = instances.map(Ctor => new Ctor()) as X<Middleware>[]
+    if (modifiers) {
+      this.$modifierConstructors = modifiers
+      this.initializeModifiers()
     }
   }
 
@@ -128,8 +138,8 @@ export default class RouteCore<
    * Mounts a child router at the specified sub-path.
    * Propagates update callbacks to maintain global request metadata.
    *
-   * @param path - Sub-path at which to mount the child router.
-   * @param route - The child Route instance.
+   * @param path sub-path at which to mount the child router.
+   * @param route child Route instance.
    */
   public mount(path: string, route: Route<any>) {
     this.$mounted.set(path, route)
@@ -137,6 +147,7 @@ export default class RouteCore<
 
     if (this.$updateCallback) {
       route.__$connectToSigil(
+        this.__$sigil,
         () => this.$updateCallback?.(),
         this.__$options
       )
@@ -148,13 +159,18 @@ export default class RouteCore<
    * Connects the router to the Sigil framework internals.
    * Merges new router options and registers the structure update callback.
    *
+   * @param sigil sigil instance
    * @param updateCallback callback to invoke on structural changes.
    * @param optionsRequest partial router options to merge (excluding modifiers).
    * @internal
    */
-  public __$connectToSigil(updateCallback: () => any, optionsRequest?: Omit<Partial<RouteOptions<any>>, "modifiers">) {
-    if (!optionsRequest) return
+  public __$connectToSigil(sigil: Sigil | undefined, updateCallback: () => any, optionsRequest?: Omit<Partial<RouteOptions<any>>, "modifiers">) {
     this.$updateCallback = updateCallback
+    this.__$sigil = sigil
+
+    this.initializeModifiers()
+
+    if (!optionsRequest) return
 
     if (!this.__$options) this.__$options = {}
     for (const [key, value] of Object.entries(optionsRequest)) {
@@ -182,5 +198,20 @@ export default class RouteCore<
     }
 
     return nextRequest
+  }
+
+  /**
+   * Initialize or re-initialize modifier instances
+   * @private
+   */
+  private initializeModifiers() {
+    this.$modifierInstances = this.$modifierConstructors.map(modifier => {
+      attachModifierContext(modifier, {
+        sigilApi: this.__$sigil,
+        debugOpts: this.routeOptions?.debug || {}
+      })
+
+      return new modifier()
+    }) as X<Middleware>[]
   }
 }

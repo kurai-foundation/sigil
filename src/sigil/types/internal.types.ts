@@ -1,4 +1,4 @@
-import { ModifierConstructor } from "~/route/modifier"
+import { ModifierConstructor } from "~/route/modifier/modifier"
 import Route, { RouteOptions } from "~/route/route"
 import { SigilMiddleware, SigilMiddlewareCallback } from "~/sigil/misc/sigil-middleware"
 import { SigilPlugin, SigilPluginConstructor } from "~/sigil/misc/sigil-plugin"

@@ -1,4 +1,4 @@
-import { MergePayloads, Modifier, ModifierConstructor } from "~/route/modifier"
+import { MergePayloads, Modifier, ModifierConstructor } from "~/route/modifier/modifier"
 import Route, { RouteOptions } from "~/route/route"
 
 export {
