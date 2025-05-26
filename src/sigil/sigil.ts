@@ -102,6 +102,7 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     this.$routes.add([path, route])
 
     route.__$connectToSigil(
+      this,
       () => this.$updateCallback(),
       { debug: this.$options.debug }
     )
@@ -128,7 +129,7 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     this.$root.mount(path, route)
     this.$routes.add([path, route])
 
-    route.__$connectToSigil(() => this.$updateCallback())
+    route.__$connectToSigil(this, () => this.$updateCallback())
     return route
   }
 
