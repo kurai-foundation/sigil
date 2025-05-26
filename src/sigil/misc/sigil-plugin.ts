@@ -10,8 +10,7 @@ import { $InternalPluginContext, $InternalRoutesListMethods, $SigilInternalPlugi
  * Constructor type for Sigil plugins.
  * @template P The SigilPlugin subclass.
  */
-export type SigilPluginConstructor<P extends SigilPlugin> =
-  new (config: P extends SigilPlugin<infer C> ? C : never) => P
+export type SigilPluginConstructor<P extends SigilPlugin> = new () => P
 
 /**
  * Base class for Sigil framework plugins.

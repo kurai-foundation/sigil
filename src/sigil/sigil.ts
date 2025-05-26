@@ -72,10 +72,11 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
         sigilApi: this,
         responseTemplate: this.$responseTemplate,
         routes: this.$routes,
-        debugOpts: this.$options.debug || {}
+        debugOpts: this.$options.debug || {},
+        pluginConfig: config
       })
 
-      const instance = new plugin(config as any)
+      const instance = new plugin()
       this.$plugins.set(plugin.name, instance as any as SigilPlugin)
     }
     catch (error: any) {

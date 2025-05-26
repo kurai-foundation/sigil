@@ -1,4 +1,3 @@
-import { config } from "nodemon"
 import { ModifierConstructor, Route, RouteOptions } from "~/route"
 import { SigilMiddlewareCallback } from "~/sigil/misc/sigil-middleware"
 import { SigilPlugin, SigilPluginConstructor } from "~/sigil/misc/sigil-plugin"
@@ -26,6 +25,11 @@ interface Options {
    * Debug options for plugin logging.
    */
   debugOpts: Partial<DebugOptions>
+
+  /**
+   * Plugin configuration
+   */
+  pluginConfig?: Record<any, any>
 }
 
 /**
@@ -54,7 +58,7 @@ export default function attachPluginContext(plugin: SigilPluginConstructor<any>,
     /**
      * Raw configuration object (e.g., from nodemon).
      */
-    pluginConfig: config || {},
+    pluginConfig: opts.pluginConfig || {},
 
     /**
      * Internal Sigil APIs exposed to plugins.
