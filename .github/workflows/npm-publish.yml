@@ -6,26 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  #  test:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #        with:
-  #          fetch-depth: 0
-  #
-  #      - name: Setup Node.js
-  #        uses: actions/setup-node@v4
-  #        with:
-  #          node-version: 24
-  #
-  #      - name: Install Dependencies
-  #        run: npm install
-  #
-  #      - name: Run Tests
-  #        run: npm test
-
   build:
-    #    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +35,7 @@ jobs:
             ./package.json
 
   publish:
-    needs: [ build ] # [build, test]
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,6 +60,15 @@ jobs:
           VERSION=${VERSION#v}
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_ENV
+          if [[ "$VERSION" == *-preview* ]]; then
+            echo "NPM_TAG=preview" >> $GITHUB_ENV
+          else
+            if [[ "$VERSION" == *-rc* ]]; then
+              echo "NPM_TAG=next" >> $GITHUB_ENV
+            else
+              echo "NPM_TAG=latest" >> $GITHUB_ENV
+            fi
+          fi
 
       - name: Update package.json with Tag Version
         run: |
@@ -86,6 +76,7 @@ jobs:
           npm version --no-git-tag-version $VERSION
 
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --tag $NPM_TAG
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
