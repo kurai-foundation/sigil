@@ -188,6 +188,9 @@ export default class Route<
         case "externalDocs":
           schema.externalDocs(value as any)
           break
+        case "allowUnknown":
+          if (value === true) schema.loose
+          break
       }
     }
     return schema

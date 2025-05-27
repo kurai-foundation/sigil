@@ -15,6 +15,7 @@ type ClientRequest<
   Headers = unknown,
   SearchParams = unknown
 > = Internal.Requests.ClientRequest<PathParams, Body, Headers, SearchParams>
+type RequestMeta = Partial<Internal.Route.RequestMetadataDescriptor>
 
 export {
   Sigil,
@@ -30,5 +31,6 @@ export {
   type DebugOptions,
   type RouteParams,
   type InferMeta,
-  type InferSchema
+  type InferSchema,
+  type RequestMeta
 }

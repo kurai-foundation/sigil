@@ -186,7 +186,9 @@ namespace Internal {
       /** Deprecated flag. */
       deprecated: boolean
       /** External docs link. */
-      externalDocs: NonNullable<SealDescriptor["externalDocs"]>
+      externalDocs: NonNullable<SealDescriptor["externalDocs"]>,
+      /** Allow unknown fields in schema */
+      allowUnknown: boolean
     }
   }
 

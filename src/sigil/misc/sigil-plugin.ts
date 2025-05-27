@@ -105,7 +105,7 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
   /**
    * Called once when the plugin is first initialized.
    */
-  public onInitialize(): void {}
+  public onInitialize(): any {}
 
   /**
    * Called before the program exits (SIGINT, etc.).

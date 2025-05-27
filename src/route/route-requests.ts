@@ -2,6 +2,7 @@ import { HttpMethod, Pathfinder, RouteParams } from "@sigiljs/pathfinder"
 import { seal, ValidationError } from "@sigiljs/seal"
 import { ClientRequest } from "~/index"
 import SigilResponsesList from "~/sigil/misc/sigil-responses-list"
+import Sigil from "~/sigil/sigil"
 import { type Internal } from "~/types"
 import { MergePayloads, ModifierConstructor } from "./modifier/modifier"
 import { RouteOptions } from "./route"
@@ -17,7 +18,8 @@ type THandler<
   M extends Constructor | undefined = undefined
 > = (
   request: X<Internal.Requests.ClientRequest<RouteParams<Path>, Body, Headers, Query>, M>,
-  responses: SigilResponsesList
+  responses: SigilResponsesList,
+  app: Sigil | null
 ) => Internal.Requests.HandlerResponse
 
 type X<
@@ -177,7 +179,7 @@ export default class RouteRequests<
         params: _request.params,
         body: _request.body?.json(),
         query: _request.query.getObject(),
-        headers: _request.headers
+        headers: _request.headers.link
       } as Record<string, any>
 
       // Perform schema validations unless skipped by debug settings
@@ -197,7 +199,7 @@ export default class RouteRequests<
       }
 
       // Execute handler with injected modifiers and response helpers
-      return handler(await ref.$injectModifier(_request) as any, new SigilResponsesList())
+      return handler(await ref.$injectModifier(_request) as any, new SigilResponsesList(), this.__$sigil || null)
     })
 
     return {

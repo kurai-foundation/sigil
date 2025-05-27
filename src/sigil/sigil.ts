@@ -48,12 +48,16 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     Modifiers extends (readonly ModifierConstructor<any, any>[]) | undefined = undefined
   >(
     _: { path?: Path, body?: Body, headers?: Headers, query?: Query, modifiers?: Modifiers },
-    callback: (request: ClientRequest<
-      RouteParams<Path>,
-      InferSchema<ObjectSchema<Body extends [Record<string, any>, any] ? Body[0] : Body>>,
-      InferSchema<ObjectSchema<Headers extends [Record<string, any>, any] ? Headers[0] : Headers>>,
-      InferSchema<ObjectSchema<Query extends [Record<string, any>, any] ? Query[0] : Query>>
-    > & (Modifiers extends readonly ModifierConstructor<any, any>[] ? MergePayloads<Modifiers> : {}), response: SigilResponsesList) => any
+    callback: (
+      request: ClientRequest<
+        RouteParams<Path>,
+        InferSchema<ObjectSchema<Body extends [Record<string, any>, any] ? Body[0] : Body>>,
+        InferSchema<ObjectSchema<Headers extends [Record<string, any>, any] ? Headers[0] : Headers>>,
+        InferSchema<ObjectSchema<Query extends [Record<string, any>, any] ? Query[0] : Query>>
+      > & (Modifiers extends readonly ModifierConstructor<any, any>[] ? MergePayloads<Modifiers> : {}),
+      response: SigilResponsesList,
+      app: Sigil | null
+    ) => any
   ) { return callback }
 
   /**
@@ -171,21 +175,30 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
    * @returns promise resolving to host, port, and URL of the server.
    */
   public async listen(port: number, host: string = "localhost"): Promise<{ host: string; port: number; url: URL }> {
-    return new Promise((resolve, reject) => {
-      if (!this.$server) {
-        return reject("Cannot use internal server in the serverless mode")
-      }
-      const protocol = this.$options.server?.https?.cert ? "https" : "http"
-      const url = safeUrl(`${ protocol }://${ host }:${ port }`)
+    if (!this.$server) {
+      throw new Error("Cannot use internal server in the serverless mode")
+    }
+    const protocol = this.$options.server?.https?.cert ? "https" : "http"
+    const url = safeUrl(`${ protocol }://${ host }:${ port }`)
 
-      if (!url) {
-        return reject(`Invalid URL: ${ protocol }://${ host }:${ port }`)
-      }
+    if (!url) {
+      throw new Error(`Invalid URL: ${ protocol }://${ host }:${ port }`)
+    }
 
-      this.$initialized = true
-      this.$updateCallback()
+    this.$initialized = true
 
-      this.$server.listen(port, host, () => resolve({ host, port, url }))
+    await this.$updateCallback()
+    await new Promise<void>(resolve => {
+      const interval = setInterval(() => {
+        if (!this.$pluginsInitialized) return
+
+        resolve()
+        clearInterval(interval)
+      }, 100)
+    })
+
+    return new Promise(resolve => {
+      this.$server!.listen(port, host, () => resolve({ host, port, url }))
     })
   }
 }

@@ -63,7 +63,6 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
     modification: MiddlewareModificationRequestOptions,
     at: number) {
     if (modification.code) response.code = modification.code
-    const template = this.$responseTemplate(response)
 
     // Plugin hook before sending response
     for (const plugin of this.$plugins.values()) {
@@ -74,6 +73,8 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
         return
       }
     }
+
+    const template = this.$responseTemplate(response)
 
     // Log request method, URL, status code, and latency
     const consumed = performance.now() - at

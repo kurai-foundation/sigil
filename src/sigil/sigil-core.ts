@@ -68,7 +68,7 @@ export default abstract class SigilCore<T extends Partial<SigilOptions>> {
   /**
    * Internal flag to prevent multiple plugin initializations.
    */
-  #pluginsInitialized = false
+  protected $pluginsInitialized = false
 
   /**
    * Constructs the Sigil core framework instance.
@@ -143,11 +143,11 @@ export default abstract class SigilCore<T extends Partial<SigilOptions>> {
     if (!this.$initialized) return
 
     // Run onInitialize only once
-    if (!this.#pluginsInitialized) {
-      this.#pluginsInitialized = true
+    if (!this.$pluginsInitialized) {
+      this.$pluginsInitialized = true
 
       for (const plugin of this.$plugins.values()) {
-        plugin.onInitialize()
+        await plugin.onInitialize()
       }
       const pluginsList = Array.from(this.$plugins.values()).map(i => i.name)
       this.logger({
