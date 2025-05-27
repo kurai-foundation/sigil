@@ -2,7 +2,7 @@ import { RouteParams } from "@sigiljs/pathfinder"
 import { BaseSchema, ObjectSchema } from "@sigiljs/seal"
 import { InferSchema } from "@sigiljs/seal/types"
 import { ClientRequest } from "~/index"
-import { ModifierConstructor, Route, RouteOptions } from "~/route"
+import { MergePayloads, ModifierConstructor, Route, RouteOptions } from "~/route"
 import { attachPluginContext, SigilPlugin, SigilPluginConstructor, SigilResponsesList } from "~/sigil/misc"
 import SigilRequestProcessor from "~/sigil/sigil-request-processor"
 import { InferMeta, MaybeInferMeta, RequestValidator, SigilOptions } from "~/sigil/types"
@@ -44,15 +44,16 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     Path extends string,
     Body extends Record<string, any> | [Record<string, any>, any],
     Headers extends Record<string, any> | [Record<string, any>, any],
-    Query extends Record<string, any> | [Record<string, any>, any]
+    Query extends Record<string, any> | [Record<string, any>, any],
+    Middleware extends (readonly ModifierConstructor<any, any>[])
   >(
-    _: { path?: Path, body?: Body, headers?: Headers, query?: Query },
+    _: { path?: Path, body?: Body, headers?: Headers, query?: Query, middleware?: Middleware },
     callback: (request: ClientRequest<
       RouteParams<Path>,
       InferSchema<ObjectSchema<Body extends [Record<string, any>, any] ? Body[0] : Body>>,
       InferSchema<ObjectSchema<Headers extends [Record<string, any>, any] ? Headers[0] : Headers>>,
       InferSchema<ObjectSchema<Query extends [Record<string, any>, any] ? Query[0] : Query>>
-    >, response: SigilResponsesList) => any
+    > & (Middleware extends readonly ModifierConstructor<any, any>[] ? MergePayloads<Middleware> : {}), response: SigilResponsesList) => any
   ) { return callback }
 
   /**

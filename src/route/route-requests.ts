@@ -1,5 +1,6 @@
 import { HttpMethod, Pathfinder, RouteParams } from "@sigiljs/pathfinder"
 import { seal, ValidationError } from "@sigiljs/seal"
+import { ClientRequest } from "~/index"
 import SigilResponsesList from "~/sigil/misc/sigil-responses-list"
 import { type Internal } from "~/types"
 import { MergePayloads, ModifierConstructor } from "./modifier/modifier"
@@ -8,21 +9,22 @@ import RouteCore from "./route-core"
 
 type Constructor = (readonly ModifierConstructor<any, any>[]) | undefined
 
-type X<
-  T extends Record<any, any> | undefined,
-  M extends Constructor
-> = (T extends Record<any, any> ? T : Record<string, any>) &
-  (M extends readonly ModifierConstructor<any, any>[] ? MergePayloads<M> : {})
-
 type THandler<
   Path extends string,
   Body extends Record<string, any> | undefined = undefined,
   Headers extends Record<string, string | undefined> = Record<string, string | undefined>,
-  Query extends Record<string, string | undefined> = Record<string, string | undefined>
+  Query extends Record<string, string | undefined> = Record<string, string | undefined>,
+  M extends Constructor | undefined = undefined
 > = (
-  request: Internal.Requests.ClientRequest<RouteParams<Path>, Body, Headers, Query>,
+  request: X<Internal.Requests.ClientRequest<RouteParams<Path>, Body, Headers, Query>, M>,
   responses: SigilResponsesList
 ) => Internal.Requests.HandlerResponse
+
+type X<
+  T extends ClientRequest<any>,
+  M extends Constructor
+> = T & (M extends readonly ModifierConstructor<any, any>[] ? MergePayloads<M> : {})
+
 
 /**
  * Extends RouteCore to provide methods for registering HTTP routes
@@ -63,7 +65,7 @@ export default class RouteRequests<
    */
   public get<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("GET", path, handler)
   }
@@ -71,7 +73,7 @@ export default class RouteRequests<
   /** Registers a POST route. */
   public post<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("POST", path, handler)
   }
@@ -79,7 +81,7 @@ export default class RouteRequests<
   /** Registers a PUT route. */
   public put<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("PUT", path, handler)
   }
@@ -87,7 +89,7 @@ export default class RouteRequests<
   /** Registers a PATCH route. */
   public patch<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("PATCH", path, handler)
   }
@@ -95,7 +97,7 @@ export default class RouteRequests<
   /** Registers a DELETE route. */
   public delete<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("DELETE", path, handler)
   }
@@ -103,7 +105,7 @@ export default class RouteRequests<
   /** Registers an OPTIONS route. */
   public options<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("OPTIONS", path, handler)
   }
@@ -111,7 +113,7 @@ export default class RouteRequests<
   /** Registers a TRACE route. */
   public trace<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("TRACE", path, handler)
   }
@@ -119,7 +121,7 @@ export default class RouteRequests<
   /** Registers a CONNECT route. */
   public connect<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("CONNECT", path, handler)
   }
@@ -127,7 +129,7 @@ export default class RouteRequests<
   /** Registers a HEAD route. */
   public head<Path extends string>(
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     return this.$request("HEAD", path, handler)
   }
@@ -145,7 +147,7 @@ export default class RouteRequests<
   private $request<Path extends string>(
     method: HttpMethod,
     path: Path,
-    handler: THandler<Path, X<BodySchema, Modifier>, HeadersSchema, QuerySchema>
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
     const ref = (this.__initialParent ?? this) as this
     const schemas = { ...this.__$schemas }
@@ -195,7 +197,7 @@ export default class RouteRequests<
       }
 
       // Execute handler with injected modifiers and response helpers
-      return handler(await ref.$injectModifier(_request), new SigilResponsesList())
+      return handler(await ref.$injectModifier(_request) as any, new SigilResponsesList())
     })
 
     return {
