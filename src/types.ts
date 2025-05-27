@@ -214,4 +214,6 @@ namespace Internal {
     & ({ error: T } | { exception: T } | { fail: T })
 }
 
+export type RequestMeta = Partial<Internal.Route.RequestMetadataDescriptor>
+
 export { Internal }

@@ -1,6 +1,6 @@
 import { HttpMethod, Pathfinder, RouteParams } from "@sigiljs/pathfinder"
 import { seal, ValidationError } from "@sigiljs/seal"
-import { ClientRequest } from "~/index"
+import { ClientRequest, RequestMeta } from "~/index"
 import SigilResponsesList from "~/sigil/misc/sigil-responses-list"
 import Sigil from "~/sigil/sigil"
 import { type Internal } from "~/types"
@@ -207,7 +207,7 @@ export default class RouteRequests<
        * Adds metadata to the registered route.
        * @param payload partial metadata object to merge.
        */
-      meta(payload?: Partial<Internal.Route.RequestMetadataDescriptor>) {
+      meta(payload?: RequestMeta) {
         container.metadata = { ...container.metadata, ...payload }
         ref.$registeredRequests.set(requestKey, container)
       },

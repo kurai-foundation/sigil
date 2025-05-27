@@ -24,6 +24,8 @@ export interface RouteOptions<Modifier extends Constructor> {
   debug?: Partial<DebugOptions>
 }
 
+type MetaDescriptor<Schema extends Record<any, any>> = Partial<Internal.Route.RouteDescriptor<InferSchema<ObjectSchema<Schema>>>>
+
 /**
  * Main router class for registering HTTP routes and metadata.
  * Extends RouteRequests to offer schema-based validation and
@@ -61,10 +63,13 @@ export default class Route<
    * @returns temporary cloned router with the body schema applied (without `get` method if appropriate).
    */
   public body<Schema extends Internal.Route.RequestSchemaDescriptor["body"]>(
-    schema: Schema,
-    meta?: Partial<Internal.Route.RouteDescriptor<InferSchema<ObjectSchema<Schema>>>>
+    schema: Schema | [Schema, MetaDescriptor<Schema> | undefined],
+    meta?: MetaDescriptor<Schema>
   ) {
-    const route = this.$cloneWithSchema("body", schema, meta)
+    let _schema = Array.isArray(schema) ? schema[0] : schema
+    let _meta = Array.isArray(schema) && schema[1] ? schema[1] : meta
+
+    const route = this.$cloneWithSchema("body", _schema, _meta)
     return route as Omit<
       Route<Modifiers, InferSchema<ObjectSchema<Schema>>, HeadersSchema, QuerySchema>,
       "get"
@@ -78,9 +83,11 @@ export default class Route<
    * @returns temporary cloned router with the headers schema applied.
    */
   public headers<Schema extends Internal.Route.RequestSchemaDescriptor["headers"]>(
-    schema: Schema
+    schema: Schema | [Schema, MetaDescriptor<Schema> | undefined]
   ) {
-    const route = this.$cloneWithSchema("headers", schema)
+    let _schema = Array.isArray(schema) ? schema[0] : schema
+
+    const route = this.$cloneWithSchema("headers", _schema)
     type RouteWithSchema = Route<
       Modifiers,
       BodySchema,
@@ -101,9 +108,11 @@ export default class Route<
    * @returns temporary cloned router with the query schema applied.
    */
   public query<Schema extends Internal.Route.RequestSchemaDescriptor["query"]>(
-    schema: Schema
+    schema: Schema | [Schema, MetaDescriptor<Schema> | undefined]
   ) {
-    const route = this.$cloneWithSchema("query", schema)
+    let _schema = Array.isArray(schema) ? schema[0] : schema
+
+    const route = this.$cloneWithSchema("query", _schema)
     type RouteWithSchema = Route<
       Modifiers,
       BodySchema,
@@ -124,9 +133,9 @@ export default class Route<
    * @returns temporary cloned router with the params schema applied.
    */
   public params<Schema extends Internal.Route.RequestSchemaDescriptor["params"]>(
-    schema: Schema
+    schema: Schema | [Schema, MetaDescriptor<Schema> | undefined]
   ) {
-    return this.$cloneWithSchema("params", schema)
+    return this.$cloneWithSchema("params", Array.isArray(schema) ? schema[0] : schema)
   }
 
   /**
