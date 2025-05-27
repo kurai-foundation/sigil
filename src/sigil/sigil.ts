@@ -45,15 +45,15 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     Body extends Record<string, any> | [Record<string, any>, any],
     Headers extends Record<string, any> | [Record<string, any>, any],
     Query extends Record<string, any> | [Record<string, any>, any],
-    Middleware extends (readonly ModifierConstructor<any, any>[])
+    Modifiers extends (readonly ModifierConstructor<any, any>[])
   >(
-    _: { path?: Path, body?: Body, headers?: Headers, query?: Query, middleware?: Middleware },
+    _: { path?: Path, body?: Body, headers?: Headers, query?: Query, modifiers?: Modifiers },
     callback: (request: ClientRequest<
       RouteParams<Path>,
       InferSchema<ObjectSchema<Body extends [Record<string, any>, any] ? Body[0] : Body>>,
       InferSchema<ObjectSchema<Headers extends [Record<string, any>, any] ? Headers[0] : Headers>>,
       InferSchema<ObjectSchema<Query extends [Record<string, any>, any] ? Query[0] : Query>>
-    > & (Middleware extends readonly ModifierConstructor<any, any>[] ? MergePayloads<Middleware> : {}), response: SigilResponsesList) => any
+    > & (Modifiers extends readonly ModifierConstructor<any, any>[] ? MergePayloads<Modifiers> : {}), response: SigilResponsesList) => any
   ) { return callback }
 
   /**
