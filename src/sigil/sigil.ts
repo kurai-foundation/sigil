@@ -45,7 +45,7 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
     Body extends Record<string, any> | [Record<string, any>, any],
     Headers extends Record<string, any> | [Record<string, any>, any],
     Query extends Record<string, any> | [Record<string, any>, any],
-    Modifiers extends (readonly ModifierConstructor<any, any>[])
+    Modifiers extends (readonly ModifierConstructor<any, any>[]) | undefined = undefined
   >(
     _: { path?: Path, body?: Body, headers?: Headers, query?: Query, modifiers?: Modifiers },
     callback: (request: ClientRequest<
