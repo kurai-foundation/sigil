@@ -1,8 +1,10 @@
+import { RouteParams } from "@sigiljs/pathfinder"
 import { seal } from "@sigiljs/seal"
+import { InferSchema } from "@sigiljs/seal/types"
 import { Modifier, Route } from "~/route"
 import { SigilPlugin } from "~/sigil/misc"
 import Sigil from "~/sigil/sigil"
-import { DebugOptions, SigilOptions } from "~/sigil/types"
+import { DebugOptions, InferMeta, SigilOptions } from "~/sigil/types"
 import { Internal } from "~/types"
 
 type ResponseTemplateCallback = Internal.ResponseTemplateCallback
@@ -25,5 +27,8 @@ export {
   type AbstractLogger,
   type ClientRequest,
   type SigilOptions,
-  type DebugOptions
+  type DebugOptions,
+  type RouteParams,
+  type InferMeta,
+  type InferSchema
 }

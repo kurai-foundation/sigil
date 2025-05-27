@@ -1,6 +1,9 @@
-import { BaseSchema } from "@sigiljs/seal"
+import { RouteParams } from "@sigiljs/pathfinder"
+import { BaseSchema, ObjectSchema } from "@sigiljs/seal"
+import { InferSchema } from "@sigiljs/seal/types"
+import { ClientRequest } from "~/index"
 import { ModifierConstructor, Route, RouteOptions } from "~/route"
-import { attachPluginContext, SigilPlugin, SigilPluginConstructor } from "~/sigil/misc"
+import { attachPluginContext, SigilPlugin, SigilPluginConstructor, SigilResponsesList } from "~/sigil/misc"
 import SigilRequestProcessor from "~/sigil/sigil-request-processor"
 import { InferMeta, MaybeInferMeta, RequestValidator, SigilOptions } from "~/sigil/types"
 import safeUrl from "~/utils/safe-url"
@@ -19,6 +22,11 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
   public defineSchema = Sigil.defineSchema
 
   /**
+   * Static helper to pair a handler with optional metadata.
+   */
+  public defineHandler = Sigil.defineHandler
+
+  /**
    * Constructs a new Sigil instance with given options.
    *
    * @param options partial SigilOptions to configure core behavior.
@@ -26,6 +34,26 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
   constructor(options?: T) {
     super(options)
   }
+
+  /**
+   * Define request handler with metadata.
+   *
+   * TypeScript-only helper
+   */
+  public static defineHandler<
+    Path extends string,
+    Body extends Record<string, any> | [Record<string, any>, any],
+    Headers extends Record<string, any> | [Record<string, any>, any],
+    Query extends Record<string, any> | [Record<string, any>, any]
+  >(
+    _: { path?: Path, body?: Body, headers?: Headers, query?: Query },
+    callback: (request: ClientRequest<
+      RouteParams<Path>,
+      InferSchema<ObjectSchema<Body extends [Record<string, any>, any] ? Body[0] : Body>>,
+      InferSchema<ObjectSchema<Headers extends [Record<string, any>, any] ? Headers[0] : Headers>>,
+      InferSchema<ObjectSchema<Query extends [Record<string, any>, any] ? Query[0] : Query>>
+    >, response: SigilResponsesList) => any
+  ) { return callback }
 
   /**
    * Overload: define a schema without metadata.
