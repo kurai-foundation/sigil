@@ -46,6 +46,12 @@ export class $InternalNamedSigilResponse extends BasicResponse {
   __$schemaName?: string
 
   /**
+   * Raw flag
+   * @internal
+   */
+  __$raw?: boolean
+
+  /**
    * Constructs an internal named response with default values.
    */
   constructor() {
@@ -84,13 +90,39 @@ export default class SigilResponse extends BasicResponse {
    * @returns An internal named response instance.
    */
   public static describe(
-    name: string,
+    name: string | null,
     content: any,
     code?: number,
     headers?: Record<string, any>
   ): $InternalNamedSigilResponse {
     const namedResponse = new $InternalNamedSigilResponse()
-    namedResponse.__$schemaName = name
+    if (name) namedResponse.__$schemaName = name
+    namedResponse.content = content
+    namedResponse.code = code || 200
+    namedResponse.headers = new IncomingHeaders(headers)
+
+    return namedResponse
+  }
+
+  /**
+   * Creates a raw named response for OpenAPI schema generation.
+   * The returned instance carries a `__$schemaName` property.
+   *
+   * @param name - Schema name reference for documentation.
+   * @param content - The response payload.
+   * @param code - Optional HTTP status code. Defaults to 200.
+   * @param headers - Optional raw headers object.
+   * @returns An internal named response instance.
+   */
+  public static describeRaw(
+    name: string | null,
+    content: any,
+    code?: number,
+    headers?: Record<string, any>
+  ): $InternalNamedSigilResponse {
+    const namedResponse = new $InternalNamedSigilResponse()
+    if (name) namedResponse.__$schemaName = name
+    namedResponse.__$raw = true
     namedResponse.content = content
     namedResponse.code = code || 200
     namedResponse.headers = new IncomingHeaders(headers)

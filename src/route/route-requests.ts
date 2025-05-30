@@ -210,6 +210,7 @@ export default class RouteRequests<
       meta(payload?: RequestMeta) {
         container.metadata = { ...container.metadata, ...payload }
         ref.$registeredRequests.set(requestKey, container)
+        ref.$updateCallback?.()
       },
       /**
        * Shortcut to set the route description metadata.

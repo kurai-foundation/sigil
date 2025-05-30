@@ -145,6 +145,8 @@ namespace Internal {
       deprecated: boolean
       /** External documentation links for this route. */
       externalDocs: NonNullable<SealDescriptor["externalDocs"]>
+      /** Request summary */
+      summary: string
     }
 
     /**
