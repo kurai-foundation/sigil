@@ -1,11 +1,11 @@
 import { RouteParams } from "@sigiljs/pathfinder"
-import { BaseSchema, ObjectSchema } from "@sigiljs/seal"
+import { ObjectSchema } from "@sigiljs/seal"
 import { InferSchema } from "@sigiljs/seal/types"
 import { ClientRequest } from "~/index"
 import { MergePayloads, ModifierConstructor, Route, RouteOptions } from "~/route"
 import { attachPluginContext, SigilPlugin, SigilPluginConstructor, SigilResponsesList } from "~/sigil/misc"
 import SigilRequestProcessor from "~/sigil/sigil-request-processor"
-import { InferMeta, MaybeInferMeta, RequestValidator, SigilOptions } from "~/sigil/types"
+import { InferMeta, RequestValidator, SigilOptions } from "~/sigil/types"
 import safeUrl from "~/utils/safe-url"
 
 /**
@@ -66,7 +66,9 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
    * @param schema object mapping keys to BaseSchema instances.
    * @returns tuple of schema and undefined metadata.
    */
-  public static defineSchema<Schema extends { [key: string]: BaseSchema<any> }>(schema: Schema): [Schema, undefined]
+  public static defineSchema<Schema extends RequestValidator, Meta extends InferMeta<Schema>>(schema: Schema): [Schema & (Meta extends {
+    allowUnknown: true
+  } ? { [key: string]: any } : {}), undefined]
 
   /**
    * Overload: define a schema with metadata inference.
@@ -75,7 +77,9 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
    * @param meta inferred metadata for the schema.
    * @returns tuple of schema and inferred metadata.
    */
-  public static defineSchema<Schema extends RequestValidator>(schema: Schema, meta: InferMeta<Schema>): [Schema, InferMeta<Schema>]
+  public static defineSchema<Schema extends RequestValidator, Meta extends InferMeta<Schema>>(schema: Schema, meta: Meta): [Schema & (Meta extends {
+    allowUnknown: true
+  } ? { [key: string]: any } : {}), Meta]
 
   /**
    * Implements defineSchema overloads, returning the schema and optional metadata.
@@ -84,7 +88,9 @@ export default class Sigil<T extends Partial<SigilOptions> = Partial<SigilOption
    * @param meta optional metadata for documentation.
    * @returns tuple associating schema with its metadata.
    */
-  public static defineSchema<Schema extends RequestValidator>(schema: Schema, meta?: InferMeta<Schema>): [Schema, MaybeInferMeta<Schema>] {
+  public static defineSchema<Schema extends RequestValidator, Meta extends InferMeta<Schema>>(schema: Schema, meta?: Meta): [Schema & (Meta extends {
+    allowUnknown: true
+  } ? { [key: string]: any } : {}), Meta | undefined] {
     return [schema, meta]
   }
 

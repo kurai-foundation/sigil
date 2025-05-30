@@ -1,6 +1,6 @@
 import { RouteParams } from "@sigiljs/pathfinder"
+import { ClientRequest } from "~/index"
 import { $InternalModifierContext, $SigilInternalModifierAPI } from "~/route/modifier/modifier.types"
-import { Internal } from "~/types"
 
 /**
  * Request content modifier.
@@ -51,7 +51,7 @@ export abstract class Modifier<
    * matching the type specified in the subclass.
    */
   public abstract onRequest(
-    request: Internal.Requests.ClientRequest<RouteParams<Path>>
+    request: ClientRequest<RouteParams<Path>>
   ): T | Promise<T>
 }
 

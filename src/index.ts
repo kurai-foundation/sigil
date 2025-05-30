@@ -1,7 +1,7 @@
 import { RouteParams } from "@sigiljs/pathfinder"
 import { seal } from "@sigiljs/seal"
 import { InferSchema } from "@sigiljs/seal/types"
-import { Modifier, Route } from "~/route"
+import { MergePayloads, Modifier, ModifierConstructor, Route } from "~/route"
 import { SigilPlugin } from "~/sigil/misc"
 import Sigil from "~/sigil/sigil"
 import { DebugOptions, InferMeta, SigilOptions } from "~/sigil/types"
@@ -10,11 +10,16 @@ import { Internal, RequestMeta } from "~/types"
 type ResponseTemplateCallback = Internal.ResponseTemplateCallback
 type AbstractLogger = Internal.AbstractLogger
 type ClientRequest<
-  PathParams extends Record<string, string>,
+  PathParams extends Record<string, string> = Record<string, string>,
   Body = unknown,
   Headers = unknown,
   SearchParams = unknown
 > = Internal.Requests.ClientRequest<PathParams, Body, Headers, SearchParams>
+
+type RequestWithModifiers<
+  Request extends ClientRequest,
+  Modifiers extends Modifier[] | undefined = undefined
+> = Request & (Modifiers extends Modifier<infer U>[] ? MergePayloads<ModifierConstructor<U>[]> : {})
 
 export {
   Sigil,
@@ -31,5 +36,6 @@ export {
   type RouteParams,
   type InferMeta,
   type InferSchema,
-  type RequestMeta
+  type RequestMeta,
+  type RequestWithModifiers
 }
