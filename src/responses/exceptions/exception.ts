@@ -39,6 +39,7 @@ interface IExceptionOptions {
  * Includes an error code and supports construction from any Error instance.
  */
 export default class Exception extends Error {
+  public static name = "Exception"
   /**
    * Numeric error code (e.g., HTTP status code between 100 and 599).
    */
@@ -49,7 +50,7 @@ export default class Exception extends Error {
   /**
    * Constructs a new Exception.
    *
-   * @param options - Configuration for the exception including code, name, and message.
+   * @param options configuration for the exception including code, name, and message.
    */
   constructor(options: IExceptionOptions) {
     super(
@@ -73,7 +74,7 @@ export default class Exception extends Error {
    * Creates an Exception instance from any Error object.
    * If the error is already an Exception, it is returned directly.
    *
-   * @param error - The error to wrap or convert.
+   * @param error error to wrap or convert.
    * @returns An Exception instance with code and message extracted.
    */
   public static fromError(error: Error): Exception {
@@ -83,5 +84,22 @@ export default class Exception extends Error {
       code: (error as any).code || 500,
       message: error.message
     })
+  }
+
+  /**
+   * Describe static exception class.
+   * Used for responses describing in the request meta.
+   *
+   * @param {string} description exception description, will override default description.
+   * @param {Record<string, string>} headers exception headers.
+   * @returns {Exception} exception with internal metadata definition.
+   */
+  public static describe(description: string, headers?: Record<string, string>): (new () => Exception) {
+    const ProxyException = class extends this {
+      public __$description = description
+      public __$headers = headers
+    }
+
+    return ProxyException as any
   }
 }

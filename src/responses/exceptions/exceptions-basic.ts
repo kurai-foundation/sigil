@@ -8,6 +8,8 @@ function ensureMessage(defaultMessage: string, message: string[]): string[] {
 }
 
 export class BadRequest extends Exception {
+  public static name = "BadRequest"
+
   /**
    * The server could not understand the request due to malformed syntax.
    *
@@ -26,6 +28,8 @@ export class BadRequest extends Exception {
 }
 
 export class Unauthorized extends Exception {
+  public static name = "Unauthorized"
+
   /**
    * The request requires user authentication.
    *
@@ -44,6 +48,8 @@ export class Unauthorized extends Exception {
 }
 
 export class PaymentRequired extends Exception {
+  public static name = "PaymentRequired"
+
   /**
    * Payment is required to process the request.
    *
@@ -62,6 +68,8 @@ export class PaymentRequired extends Exception {
 }
 
 export class Forbidden extends Exception {
+  public static name = "Forbidden"
+
   /**
    * The server understood the request, but refuses to authorize it.
    *
@@ -80,6 +88,8 @@ export class Forbidden extends Exception {
 }
 
 export class NotFound extends Exception {
+  public static name = "NotFound"
+
   /**
    * The requested resource could not be found on the server.
    *
@@ -98,6 +108,8 @@ export class NotFound extends Exception {
 }
 
 export class MethodNotAllowed extends Exception {
+  public static name = "MethodNotAllowed"
+
   /**
    * The request method is not allowed on the requested resource.
    *
@@ -116,6 +128,8 @@ export class MethodNotAllowed extends Exception {
 }
 
 export class NotAcceptable extends Exception {
+  public static name = "NotAcceptable"
+
   /**
    * The requested resource is capable of generating only response not acceptable according to the Accept headers.
    *
@@ -134,6 +148,8 @@ export class NotAcceptable extends Exception {
 }
 
 export class ProxyAuthenticationRequired extends Exception {
+  public static name = "ProxyAuthenticationRequired"
+
   /**
    * Proxy authentication is required to process the request.
    *
@@ -152,6 +168,8 @@ export class ProxyAuthenticationRequired extends Exception {
 }
 
 export class RequestTimeout extends Exception {
+  public static name = "RequestTimeout"
+
   /**
    * The server timed out waiting for the client request.
    *
@@ -170,6 +188,8 @@ export class RequestTimeout extends Exception {
 }
 
 export class Conflict extends Exception {
+  public static name = "Conflict"
+
   /**
    * The request could not be completed due to a conflict with the current state of the resource.
    *
@@ -188,6 +208,8 @@ export class Conflict extends Exception {
 }
 
 export class Gone extends Exception {
+  public static name = "Gone"
+
   /**
    * The requested resource is no longer available and has been permanently removed.
    *
@@ -206,6 +228,8 @@ export class Gone extends Exception {
 }
 
 export class LengthRequired extends Exception {
+  public static name = "LengthRequired"
+
   /**
    * The request did not specify the length of its response, which is required by the requested resource.
    *
@@ -224,6 +248,8 @@ export class LengthRequired extends Exception {
 }
 
 export class PreconditionFailed extends Exception {
+  public static name = "PreconditionFailed"
+
   /**
    * The precondition given in one or more request-header fields evaluated to false when it was tested on the server.
    *
@@ -242,6 +268,8 @@ export class PreconditionFailed extends Exception {
 }
 
 export class PayloadTooLarge extends Exception {
+  public static name = "PayloadTooLarge"
+
   /**
    * The request entity is larger than the server is willing or able to process.
    *
@@ -260,6 +288,8 @@ export class PayloadTooLarge extends Exception {
 }
 
 export class URITooLong extends Exception {
+  public static name = "URITooLong"
+
   /**
    * The URI provided was too long for the server to process.
    *
@@ -278,6 +308,8 @@ export class URITooLong extends Exception {
 }
 
 export class UnsupportedMediaType extends Exception {
+  public static name = "UnsupportedMediaType"
+
   /**
    * The request entity has a media type that the server or resource does not support.
    *
@@ -296,6 +328,8 @@ export class UnsupportedMediaType extends Exception {
 }
 
 export class RangeNotSatisfiable extends Exception {
+  public static name = "RangeNotSatisfiable"
+
   /**
    * The client has asked for a portion of the file, but the server cannot supply that portion.
    *
@@ -314,6 +348,8 @@ export class RangeNotSatisfiable extends Exception {
 }
 
 export class ExpectationFailed extends Exception {
+  public static name = "ExpectationFailed"
+
   /**
    * The server cannot meet the requirements of the Expect request-header field.
    *
@@ -332,6 +368,8 @@ export class ExpectationFailed extends Exception {
 }
 
 export class ImATeapot extends Exception {
+  public static name = "ImATeapot"
+
   /**
    * The server refuses the attempt to brew coffee with a teapot.
    *
@@ -350,6 +388,8 @@ export class ImATeapot extends Exception {
 }
 
 export class MisdirectedRequest extends Exception {
+  public static name = "MisdirectedRequest"
+
   /**
    * The request was directed at a server that is not able to produce a response.
    *
@@ -368,6 +408,8 @@ export class MisdirectedRequest extends Exception {
 }
 
 export class UnprocessableEntity extends Exception {
+  public static name = "UnprocessableEntity"
+
   /**
    * The request was well-formed but unable to be followed due to semantic errors.
    *
@@ -386,6 +428,8 @@ export class UnprocessableEntity extends Exception {
 }
 
 export class Locked extends Exception {
+  public static name = "Locked"
+
   /**
    * The resource that is being accessed is locked.
    *
@@ -404,6 +448,8 @@ export class Locked extends Exception {
 }
 
 export class FailedDependency extends Exception {
+  public static name = "FailedDependency"
+
   /**
    * The request failed due to the failure of a previous request.
    *
@@ -422,6 +468,8 @@ export class FailedDependency extends Exception {
 }
 
 export class TooEarly extends Exception {
+  public static name = "TooEarly"
+
   /**
    * The server is unwilling to risk processing a request that might be replayed.
    *
@@ -440,6 +488,8 @@ export class TooEarly extends Exception {
 }
 
 export class UpgradeRequired extends Exception {
+  public static name = "UpgradeRequired"
+
   /**
    * The server refuses to process the request without an upgrade to a different protocol.
    *
@@ -458,6 +508,8 @@ export class UpgradeRequired extends Exception {
 }
 
 export class PreconditionRequired extends Exception {
+  public static name = "PreconditionRequired"
+
   /**
    * The origin server requires the request to be conditional.
    *
@@ -476,6 +528,8 @@ export class PreconditionRequired extends Exception {
 }
 
 export class TooManyRequests extends Exception {
+  public static name = "TooManyRequests"
+
   /**
    * The user has sent too many requests in a given amount of time.
    *
@@ -494,6 +548,8 @@ export class TooManyRequests extends Exception {
 }
 
 export class RequestHeaderFieldsTooLarge extends Exception {
+  public static name = "RequestHeaderFieldsTooLarge"
+
   /**
    * The server is unwilling to process the request because its header fields are too large.
    *
@@ -512,6 +568,8 @@ export class RequestHeaderFieldsTooLarge extends Exception {
 }
 
 export class UnavailableForLegalReasons extends Exception {
+  public static name = "UnavailableForLegalReasons"
+
   /**
    * The resource requested is unavailable due to legal reasons.
    *
@@ -530,6 +588,8 @@ export class UnavailableForLegalReasons extends Exception {
 }
 
 export class InternalServerError extends Exception {
+  public static name = "InternalServerError"
+
   /**
    * The server encountered an unexpected condition that prevented it from fulfilling the request.
    *
@@ -548,6 +608,8 @@ export class InternalServerError extends Exception {
 }
 
 export class NotImplemented extends Exception {
+  public static name = "NotImplemented"
+
   /**
    * The server does not support the functionality required to fulfill the request.
    *
@@ -566,6 +628,8 @@ export class NotImplemented extends Exception {
 }
 
 export class BadGateway extends Exception {
+  public static name = "BadGateway"
+
   /**
    * The server, while acting as a gateway or proxy, received an invalid response from the upstream server.
    *
@@ -584,6 +648,8 @@ export class BadGateway extends Exception {
 }
 
 export class ServiceUnavailable extends Exception {
+  public static name = "ServiceUnavailable"
+
   /**
    * The server is currently unable to handle the request due to a temporary overload or maintenance.
    *
@@ -602,6 +668,8 @@ export class ServiceUnavailable extends Exception {
 }
 
 export class GatewayTimeout extends Exception {
+  public static name = "GatewayTimeout"
+
   /**
    * The server, while acting as a gateway or proxy, did not receive a timely response from the upstream server.
    *
@@ -620,6 +688,8 @@ export class GatewayTimeout extends Exception {
 }
 
 export class HTTPVersionNotSupported extends Exception {
+  public static name = "HTTPVersionNotSupported"
+
   /**
    * The server does not support the HTTP protocol version used in the request.
    *
@@ -638,6 +708,8 @@ export class HTTPVersionNotSupported extends Exception {
 }
 
 export class VariantAlsoNegotiates extends Exception {
+  public static name = "VariantAlsoNegotiates"
+
   /**
    * The server has an internal configuration error and is unable to complete the request.
    *
@@ -656,6 +728,8 @@ export class VariantAlsoNegotiates extends Exception {
 }
 
 export class InsufficientStorage extends Exception {
+  public static name = "InsufficientStorage"
+
   /**
    * The server is unable to store the representation needed to complete the request.
    *
@@ -674,6 +748,8 @@ export class InsufficientStorage extends Exception {
 }
 
 export class LoopDetected extends Exception {
+  public static name = "LoopDetected"
+
   /**
    * The server detected an infinite loop while processing the request.
    *
@@ -692,6 +768,8 @@ export class LoopDetected extends Exception {
 }
 
 export class NotExtended extends Exception {
+  public static name = "NotExtended"
+
   /**
    * Further extensions to the request are required for the server to fulfill it.
    *
@@ -710,6 +788,8 @@ export class NotExtended extends Exception {
 }
 
 export class NetworkAuthenticationRequired extends Exception {
+  public static name = "NetworkAuthenticationRequired"
+
   /**
    * The client needs to authenticate to gain network access.
    *

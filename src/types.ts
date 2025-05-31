@@ -147,6 +147,8 @@ namespace Internal {
       externalDocs: NonNullable<SealDescriptor["externalDocs"]>
       /** Request summary */
       summary: string
+      /** Describe security schemas used by this request */
+      security: Record<string, string[] | boolean>[] | Record<string, string[] | boolean> | string[] | string | null
     }
 
     /**
