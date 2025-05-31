@@ -1,54 +1,109 @@
 import { IncomingHttpHeaders } from "node:http"
 
 type RawHeaders = readonly string[]
-
 type Dict = NodeJS.Dict<string | string[]>
-
 type KeyOf<H, S> = keyof (H & S)
 
-/**
- * Container for HTTP headers with easy access and mutation methods.
- * Provides a normalized map of header names (lowercased) to values.
- *
- * @template Schema known header keys and their expected value types.
- * @template H raw header dictionary type (e.g., IncomingHttpHeaders).
- */
 export default class IncomingHeaders<
-  Schema extends Record<string, string> = Record<string, string>,
+  Schema extends Record<string, string | string[]> = Record<string, string | string[]>,
   H extends Dict = IncomingHttpHeaders
 > {
-  /** Internal map of header names to their string values. */
-  #map: Record<string, string> = Object.create(null)
+  #map: Record<string, string[]> = Object.create(null)
+  #cookies: Record<string, string> = Object.create(null)
 
-  /**
-   * Constructs headers container from raw headers array or dictionary.
-   *
-   * @param rawHeaders either an array of alternating header names and values,
-   * or a dictionary of header names to values or arrays of values.
-   */
-  constructor(rawHeaders: RawHeaders | Dict = []) {
-    if (Array.isArray(rawHeaders)) {
-      // Array format: [name1, value1, name2, value2, ...]
-      for (let i = 0; i < rawHeaders.length; i += 2) {
-        this.#map[rawHeaders[i].toLowerCase()] = rawHeaders[i + 1]
-      }
+  constructor(raw: RawHeaders | Dict = []) {
+    if (Array.isArray(raw)) {
+      for (let i = 0; i < raw.length; i += 2) this.append(raw[i], raw[i + 1])
     }
     else {
-      // Dictionary format: { name: value, ... }
-      for (const k in rawHeaders) {
-        const v = (rawHeaders as any)[k]
-        if (v !== undefined) {
-          this.#map[k.toLowerCase()] = Array.isArray(v) ? v.join(",") : v
-        }
+      for (const k in raw) {
+        const v = (raw as any)[k]
+        if (v === undefined) continue
+        Array.isArray(v) ? v.forEach(val => this.append(k, val))
+          : this.append(k, v)
       }
     }
   }
 
+  /* ---------------------- 🔙 100 % совместимость ----------------------- */
+
   /**
-   * Returns a copy of the internal header map.
+   * Gets the link associated with the current map instance.
+   *
+   * @return link to the internal map.
    */
-  public get link(): Record<string, string> {
+  get link() {
     return this.#map
+  }
+
+  /* ---------------------- Cookie-утилиты ----------------------- */
+
+  /**
+   * Retrieves all stored cookies as key-value pairs.
+   *
+   * @return {Record<string, string>} an object containing cookie names as keys and their corresponding values.
+   */
+  public get cookies(): Record<string, string> { return { ...this.#cookies } }
+
+  /**
+   * Retrieves the value of a cookie by its name.
+   *
+   * @param {string} name name of the cookie to retrieve.
+   * @return {string | undefined} value of the cookie if found, or undefined if the cookie does not exist.
+   */
+  public getCookie(name: string): string | undefined { return this.#cookies[name] }
+
+  /* ---------------------- Header-утилиты ----------------------- */
+
+  /**
+   * Returns an iterator for traversing the key-value pair entries stored in the internal map.
+   * Each key-value pair is returned as a two-element array.
+   *
+   * @return {IterableIterator<[string, string]>} an iterator that yields key-value pairs as arrays.
+   */
+  * entries(): IterableIterator<[string, string]> {
+    for (const k in this.#map) for (const v of this.#map[k]) yield [k, v]
+  }
+
+  /**
+   * Returns a JSON-like object of parameters, taking the first value for each key.
+   * @returns object mapping each key to its first value.
+   */
+  public json(): Schema {
+    return Object.fromEntries(
+      Object.entries(this.#map).map(([k, v]) => [k, v[0]])
+    ) as any
+  }
+
+  /**
+   * Checks if a given key exists in the internal map.
+   *
+   * @param name key to check for existence. It can either be a specific type parameter of `Schema` or any string.
+   * @return {boolean} true if the key exists in the map, otherwise false.
+   */
+  public has<T extends KeyOf<Schema, H>>(name: T | string): boolean {
+    return name.toString().toLowerCase() in this.#map
+  }
+
+  /**
+   * Retrieves the first value associated with a given key.
+   *
+   * @param name key whose associated value needs to be retrieved.
+   * @return {string | null} first value associated with the specified key if it exists, otherwise returns null.
+   */
+  get<T extends KeyOf<Schema, H>>(name: T): string | null {
+    return this.#map[name.toString().toLowerCase()]?.[0] ?? null
+  }
+
+  /**
+   * Retrieves all values associated with the specified key from the internal map.
+   *
+   * @param name key whose associated values are to be retrieved.
+   * @return {string[]} array of strings containing the values associated with the specified key.
+   * Returns an empty array if no values are found.
+   */
+  getAll<T extends KeyOf<Schema, H>>(name: T): string[] {
+    return this.#map[name.toString().toLowerCase()] ?? []
   }
 
   /**
@@ -58,8 +113,10 @@ export default class IncomingHeaders<
    * @param value header value.
    * @returns instance for chaining.
    */
-  public set<T extends KeyOf<Schema, H>>(name: T, value: string): this {
-    this.#map[String(name).toLowerCase()] = value
+  set<T extends KeyOf<Schema, H>>(name: T, value: string): this {
+    const key = name.toString().toLowerCase()
+    this.#map[key] = [value]
+    if (key === "cookie") this.#parseCookie(value)
     return this
   }
 
@@ -70,10 +127,10 @@ export default class IncomingHeaders<
    * @param value value to append.
    * @returns instance for chaining.
    */
-  public append<T extends KeyOf<Schema, H>>(name: T, value: string): this {
-    const key = String(name).toLowerCase()
-    const prev = this.#map[key]
-    this.#map[key] = prev ? `${ prev },${ value }` : value
+  append<T extends KeyOf<Schema, H>>(name: T, value: string): this {
+    const key = name.toString().toLowerCase()
+    ;(this.#map[key] ||= []).push(value)
+    if (key === "cookie") this.#parseCookie(value)
     return this
   }
 
@@ -83,54 +140,18 @@ export default class IncomingHeaders<
    * @param name header name to delete.
    * @returns instance for chaining.
    */
-  public delete<T extends KeyOf<Schema, H>>(name: T): this {
-    delete this.#map[String(name).toLowerCase()]
+  delete<T extends KeyOf<Schema, H>>(name: T): this {
+    const key = name.toString().toLowerCase()
+    delete this.#map[key]
+    if (key === "cookie") this.#cookies = {}
     return this
   }
 
-  /**
-   * Checks whether a header exists.
-   *
-   * @param name header name.
-   * @returns true if the header is present.
-   */
-  public has<T extends KeyOf<Schema, H>>(name: T): boolean {
-    return String(name).toLowerCase() in this.#map
-  }
-
-  /**
-   * Retrieves the header value or null if not present.
-   *
-   * @param name header name.
-   * @returns header value or null.
-   */
-  public get<T extends KeyOf<Schema, H>>(name: T): string | null {
-    return this.#map[String(name).toLowerCase()] ?? null
-  }
-
-  /**
-   * Retrieves a known header value with type safety based on Schema.
-   *
-   * @param name key defined in Schema.
-   * @returns typed header value or null.
-   */
-  public getKnown<T extends keyof Schema>(name: T): Schema[T] | null {
-    return (this.#map[String(name).toLowerCase()] as Schema[T]) ?? null
-  }
-
-  /**
-   * Iterates over header entries as [name, value] pairs.
-   */
-  public* entries(): IterableIterator<[string, string]> {
-    for (const k in this.#map) {
-      yield [k, this.#map[k]]
-    }
-  }
-
-  /**
-   * Returns a shallow copy of all headers as a plain object.
-   */
-  public toObject(): Record<string, string> {
-    return { ...this.#map }
+  #parseCookie(line: string): void {
+    line.split(";").forEach(pair => {
+      const [rawKey, ...rawVal] = pair.trim().split("=")
+      if (!rawKey) return
+      this.#cookies[rawKey] = decodeURIComponent(rawVal.join("=") || "")
+    })
   }
 }

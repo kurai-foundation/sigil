@@ -1,5 +1,5 @@
 import { HttpMethod } from "@sigiljs/pathfinder"
-import { BaseSchema, ObjectSchema, OptionalSchema, StringSchema } from "@sigiljs/seal"
+import { BaseSchema, ObjectSchema } from "@sigiljs/seal"
 import { SealDescriptor } from "@sigiljs/seal/types"
 import { IncomingHttpHeaders, IncomingMessage } from "node:http"
 import { IncomingBody, IncomingFile, IncomingHeaders, IncomingSearchParams } from "~/requests/containers"
@@ -168,11 +168,11 @@ namespace Internal {
       /** Body as a map of property to BaseSchema. */
       body: { [key: string]: BaseSchema<any> }
       /** Headers as a map to StringSchema. */
-      headers: { [key: string]: StringSchema }
+      headers: { [key: string]: BaseSchema<any> }
       /** Query params as map to StringSchema or OptionalSchema. */
-      query: { [key: string]: StringSchema | OptionalSchema<StringSchema> }
+      query: { [key: string]: BaseSchema<any> }
       /** Route params as map to StringSchema or OptionalSchema. */
-      params: { [key: string]: StringSchema | OptionalSchema<StringSchema> }
+      params: { [key: string]: BaseSchema<any> }
     }
 
     /**
