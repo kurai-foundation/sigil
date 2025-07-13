@@ -1,4 +1,4 @@
-import http from "node:http"
+import http, { IncomingMessage } from "node:http"
 import https from "node:https"
 import { IncomingRequestProcessorResponse } from "~/requests/containers"
 import { SigilResponse } from "~/responses"
@@ -72,6 +72,15 @@ export abstract class SigilPlugin<PluginConfig extends Record<string, any> = any
     this.$responseTemplate = ctx.responseTemplate
     this.logger = ctx.logger
   }
+
+  /**
+   * This method is triggered before an incoming request is processed.
+   * Interrupts internal request processing if `false` returned
+   *
+   * @param {IncomingMessage} request incoming HTTP request object.
+   * @param {http.ServerResponse} response HTTP server response object associated with the request.
+   */
+  public onBeforeRequestReceived(request: IncomingMessage, response: http.ServerResponse): boolean | void {}
 
   /**
    * Called when a new request is received. Cannot modify the request,

@@ -29,7 +29,7 @@ export const defaultTemplate: SigilOptions["responseTemplate"] = (payload: Inter
   }
 
   // Determine initial headers: use SigilResponse headers or empty
-  let headers = payload instanceof SigilResponse ? payload.headers.link : {}
+  let headers: Record<string, string | string[]> = payload instanceof SigilResponse ? payload.headers.link : {}
   // Default to JSON content-type if no buffer and no headers set
   if ((!Buffer.isBuffer(payload) && (Object.keys(headers).length === 0) || !("content-type" in headers))) {
     headers = { ...headers, "content-type": "application/json" }

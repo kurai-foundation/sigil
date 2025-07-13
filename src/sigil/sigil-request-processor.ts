@@ -197,6 +197,10 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
    * @param res HTTP server response object.
    */
   private async $incomingMessageHandlerImpl(req: IncomingMessage, res: http.ServerResponse) {
+    for (const plugin of this.$plugins.values()) {
+      if (plugin.onBeforeRequestReceived(req, res) === false) return
+    }
+
     const at = performance.now()
 
     // Parse and validate incoming request content
