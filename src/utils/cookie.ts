@@ -9,9 +9,11 @@ export type CookieName<T extends string> =
   NonEmpty<T> extends never ? never :
     T extends `${ string };${ string }` | `${ string }=${ string }` ? never : T
 
-export type CookieValue<T extends string> =
-  NonEmpty<T> extends never ? never :
-    NoSemicolon<T>
+export type CookieValue<T extends string | null> =
+  T extends string ? (
+    NonEmpty<T> extends never ? never :
+      NoSemicolon<T>
+    ) : null
 
 export interface CookieOptions {
   /** Absolute expiration date */
@@ -28,7 +30,7 @@ export interface CookieOptions {
   partitioned?: boolean
 }
 
-export default class Cookie<N extends string, V extends string> {
+export default class Cookie<N extends string, V extends string | null> {
   private _precompiled?: string
 
   constructor(name: CookieName<N>, value: CookieValue<V>, options: Readonly<CookieOptions> = {}) {
@@ -62,7 +64,7 @@ export default class Cookie<N extends string, V extends string> {
 
     const segments: string[] = []
 
-    segments.push(`${ this._name }=${ this.encodeCookieValue(this._value) }`)
+    segments.push(`${ this._name }=${ this._value === null ? "" : this.encodeCookieValue(this._value) }`)
 
     if (this._options.expires) {
       segments.push(`Expires=${ this._options.expires.toUTCString() }`)
