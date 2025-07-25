@@ -7,10 +7,17 @@ export default class CookieBuilder {
     this.options = { ...options || {} }
   }
 
-  public create<V extends string, N extends string>(name: CookieName<N>, value: CookieValue<V>, options?: Readonly<Partial<CookieOptions>>) {
+  public create<V extends string | null, N extends string>(name: CookieName<N>, value: CookieValue<V>, options?: Readonly<Partial<CookieOptions>>) {
     return new Cookie(name, value, {
       ...this.options,
       ...options || {}
+    })
+  }
+
+  public reset<N extends string>(name: CookieName<N>) {
+    return new Cookie(name, null, {
+      ...this.options,
+      maxAge: 0
     })
   }
 }
