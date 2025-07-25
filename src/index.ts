@@ -6,6 +6,8 @@ import { SigilPlugin } from "~/sigil/misc"
 import Sigil from "~/sigil/sigil"
 import { DebugOptions, InferMeta, SigilOptions } from "~/sigil/types"
 import { Internal, RequestMeta } from "~/types"
+import Cookie from "~/utils/cookie"
+import CookieBuilder from "~/utils/cookie-builder"
 
 type ResponseTemplateCallback = Internal.ResponseTemplateCallback
 type AbstractLogger = Internal.AbstractLogger
@@ -27,6 +29,8 @@ export {
   Route,
   SigilPlugin,
   Modifier,
+  Cookie,
+  CookieBuilder,
 
   type ResponseTemplateCallback,
   type AbstractLogger,

@@ -42,6 +42,16 @@ export default class SigilPluginSystem<T extends Partial<SigilOptions>> extends 
   }
 
   /**
+   * Checks if a specific plugin is registered within the system.
+   *
+   * @param {SigilPluginConstructor} plugin constructor of the plugin to check.
+   * @return {boolean} true if the plugin is registered, otherwise false.
+   */
+  public hasPlugin<P extends SigilPlugin>(plugin: SigilPluginConstructor<P>): boolean {
+    return this.$plugins.has(plugin.name)
+  }
+
+  /**
    * Executes a callback with the plugin instance if it exists.
    * Returns null if the plugin is not registered.
    *
@@ -58,7 +68,7 @@ export default class SigilPluginSystem<T extends Partial<SigilOptions>> extends 
   }
 
   /**
-   * Adds a global middleware to the Sigil framework.
+   * Adds global middleware to the Sigil framework.
    * Generates a unique ID for the middleware and logs its registration.
    * Returns a SigilMiddleware instance that can be used to unregister.
    *
