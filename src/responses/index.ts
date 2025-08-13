@@ -42,10 +42,12 @@ import {
   VariantAlsoNegotiates
 } from "~/responses/exceptions"
 import MiddlewareModificationRequest from "~/responses/middleware-modification-request"
+import { StreamResponse } from "~/responses/stream-response"
 import FileResponse from "./file-response"
 import RawResponse from "./raw-response"
 import Redirect from "./redirect"
 import SigilResponse from "./sigil-response"
+
 
 export {
   FileResponse,
@@ -53,6 +55,7 @@ export {
   Redirect,
   MiddlewareModificationRequest,
   SigilResponse,
+  StreamResponse,
 
   Exception,
   NotFound,
