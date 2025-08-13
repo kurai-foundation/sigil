@@ -80,13 +80,9 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
     if (response instanceof StreamResponse || isReadable((response as any).content)) {
       const stream = (response as any).content as NodeJS.ReadableStream
 
-      const headers = Object.assign(
-        {},
-        (response.headers?.link ?? {}),
-        modification.headers
-      )
+      const headers = Object.assign(response.headers.link, modification.headers)
 
-      if (!("Content-Type" in headers)) {
+      if (!response.headers.get("Content-Type")) {
         headers["Content-Type"] = "application/octet-stream"
       }
 
