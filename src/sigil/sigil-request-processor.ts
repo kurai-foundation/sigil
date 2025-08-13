@@ -7,15 +7,17 @@ import { IncomingRequestProcessorResponse } from "~/requests/containers"
 import { FileResponse, MiddlewareModificationRequest, RawResponse, Redirect, SigilResponse } from "~/responses"
 import { Exception, NotFound } from "~/responses/exceptions"
 import { MiddlewareModificationRequestOptions } from "~/responses/middleware-modification-request"
+import { StreamResponse } from "~/responses/stream-response"
 import { SigilResponsesList } from "~/sigil/misc"
 import SigilPluginSystem from "~/sigil/sigil-plugin-system"
 import { SigilOptions } from "~/sigil/types"
 import { Internal } from "~/types"
+import { isReadable } from "~/utils/is-readable"
 import { jsonStringify } from "~/utils/safe-json"
 
 /**
  * Core request processor for the Sigil framework.
- * Extends plugin system to handle incoming HTTP messages,
+ * Extends a plugin system to handle incoming HTTP messages,
  * execute route handlers, format responses, and send them over HTTP.
  *
  * @template T type of SigilOptions for runtime configuration.
@@ -100,6 +102,33 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
           : jsonStringify(response.content, { throw: true }))
 
       res.writeHead(response.code, Object.assign(response.headers.link, modification.headers)).end(content)
+      return
+    }
+
+    if (response instanceof StreamResponse || isReadable((response as any).content)) {
+      const stream = (response as any).content as NodeJS.ReadableStream
+
+      const headers = Object.assign(
+        {},
+        (response.headers?.link ?? {}),
+        modification.headers
+      )
+
+      if (!("Content-Type" in headers)) {
+        headers["Content-Type"] = "application/octet-stream"
+      }
+
+      res.writeHead(response.code, headers)
+
+      stream.on("error", () => {
+        if (!res.headersSent) res.writeHead(500)
+        res.end()
+      })
+      res.on("close", () => {
+        if (typeof (stream as any).destroy === "function") (stream as any).destroy()
+      })
+
+      stream.pipe(res)
       return
     }
 
