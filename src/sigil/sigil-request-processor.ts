@@ -63,7 +63,8 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
     response: SigilResponse | Exception,
     res: http.ServerResponse,
     modification: MiddlewareModificationRequestOptions,
-    at: number) {
+    at: number
+  ) {
     if (modification.code) response.code = modification.code
 
     // Plugin hook before sending response
@@ -74,6 +75,33 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
           : (typeof result.content === "string" ? result.content : jsonStringify(result.content, { throw: true })))
         return
       }
+    }
+
+    if (response instanceof StreamResponse || isReadable((response as any).content)) {
+      const stream = (response as any).content as NodeJS.ReadableStream
+
+      const headers = Object.assign(
+        {},
+        (response.headers?.link ?? {}),
+        modification.headers
+      )
+
+      if (!("Content-Type" in headers)) {
+        headers["Content-Type"] = "application/octet-stream"
+      }
+
+      res.writeHead(response.code, headers)
+
+      stream.on("error", () => {
+        if (!res.headersSent) res.writeHead(500)
+        res.end()
+      })
+      res.on("close", () => {
+        if (typeof (stream as any).destroy === "function") (stream as any).destroy()
+      })
+
+      stream.pipe(res)
+      return
     }
 
     const template = this.$responseTemplate(response)
@@ -102,33 +130,6 @@ export default class SigilRequestProcessor<T extends Partial<SigilOptions>> exte
           : jsonStringify(response.content, { throw: true }))
 
       res.writeHead(response.code, Object.assign(response.headers.link, modification.headers)).end(content)
-      return
-    }
-
-    if (response instanceof StreamResponse || isReadable((response as any).content)) {
-      const stream = (response as any).content as NodeJS.ReadableStream
-
-      const headers = Object.assign(
-        {},
-        (response.headers?.link ?? {}),
-        modification.headers
-      )
-
-      if (!("Content-Type" in headers)) {
-        headers["Content-Type"] = "application/octet-stream"
-      }
-
-      res.writeHead(response.code, headers)
-
-      stream.on("error", () => {
-        if (!res.headersSent) res.writeHead(500)
-        res.end()
-      })
-      res.on("close", () => {
-        if (typeof (stream as any).destroy === "function") (stream as any).destroy()
-      })
-
-      stream.pipe(res)
       return
     }
 
