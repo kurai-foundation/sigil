@@ -70,9 +70,9 @@
     "url": "https://github.com/kurai-foundation/sigil/issues"
   },
   "homepage": "https://github.com/kurai-foundation/sigil#readme",
-  "dependencies": {
+  "peerDependencies": {
     "@sigiljs/pathfinder": "^1.1.0",
-    "@sigiljs/seal": "^1.0.7",
+    "@sigiljs/seal": "^1.1.0",
     "formidable": "^3.5.4"
   }
 }
