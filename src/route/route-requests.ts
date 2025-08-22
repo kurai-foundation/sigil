@@ -136,6 +136,15 @@ export default class RouteRequests<
     return this.$request("HEAD", path, handler)
   }
 
+  /** Registers a custom HTTP method route. */
+  public custom<Path extends string>(
+    method: string,
+    path: Path,
+    handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
+  ) {
+    return this.$request(method, path, handler)
+  }
+
   /**
    * Internal method to register a route with pathfinder.
    * Validates incoming requests against schemas if provided.
