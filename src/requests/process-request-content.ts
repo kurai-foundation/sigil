@@ -27,14 +27,12 @@ interface RequestProcessorOptions {
 }
 
 /**
- * HTTP methods that may carry a request body.
+ * HTTP methods that cannot carry a request body.
  */
-const SUPPORTED_METHODS = new Set<HttpMethod>([
-  "POST",
-  "PATCH",
-  "PUT",
-  "DELETE",
-  "OPTIONS"
+const BODY_LESS_METHODS = new Set<HttpMethod>([
+  "HEAD",
+  "GET",
+  "TRACE"
 ])
 
 /**
@@ -69,7 +67,7 @@ export default async function processRequestContent(
   }
 
   // Determine if request may include a body
-  const needBody = SUPPORTED_METHODS.has(req.method as HttpMethod)
+  const needBody = !BODY_LESS_METHODS.has(req.method as HttpMethod)
   const contentType = needBody
     ? req.headers["content-type"]?.split(";", 1)[0]?.trim()
     : undefined

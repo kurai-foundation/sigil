@@ -10,6 +10,32 @@ import RouteCore from "./route-core"
 
 type Constructor = (readonly ModifierConstructor<any, any>[]) | undefined
 
+type NodeSupportedCustomHTTPMethods =
+  "ACL"
+  | "BIND"
+  | "CHECKOUT"
+  | "COPY"
+  | "LINK"
+  | "LOCK"
+  | "M-SEARCH"
+  | "MERGE"
+  | "MKACTIVITY"
+  | "MKCALENDAR"
+  | "MKCOL"
+  | "MOVE"
+  | "NOTIFY"
+  | "PROPFIND"
+  | "PROPPATCH"
+  | "PURGE"
+  | "REBIND"
+  | "REPORT"
+  | "SEARCH"
+  | "SUBSCRIBE"
+  | "UNBIND"
+  | "UNLINK"
+  | "UNLOCK"
+  | "UNSUBSCRIBE"
+
 type THandler<
   Path extends string,
   Body extends Record<string, any> | undefined = undefined,
@@ -138,7 +164,7 @@ export default class RouteRequests<
 
   /** Registers a custom HTTP method route. */
   public custom<Path extends string>(
-    method: string,
+    method: NodeSupportedCustomHTTPMethods,
     path: Path,
     handler: THandler<Path, BodySchema, HeadersSchema, QuerySchema, Modifier>
   ) {
